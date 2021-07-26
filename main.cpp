@@ -52,7 +52,7 @@ void processEvents(float deltaTime){
 int main(int argc, char** argv){
     Canvas canvas(argc,argv);
     Mesh mesh(&canvas);
-    mesh.load("../videoship.obj");
+    mesh.load("../res/videoship.obj");
     mesh.translate(10.0,10.0,10.0);
     mesh.scale(50.0,50.0,50.0);
     mesh.draw();

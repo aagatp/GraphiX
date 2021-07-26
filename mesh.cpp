@@ -49,6 +49,7 @@ void Mesh::draw(){
         }
         std::cout <<"\n";
         tri.wireframe_draw();
+        tri.draw();
     }
     std::cout << count;
 }

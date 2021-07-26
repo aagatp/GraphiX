@@ -14,6 +14,85 @@ Triangle::Triangle(Canvas* canvas, maths::vec3f a, maths::vec3f b, maths::vec3f 
 
 void Triangle::draw(){
     
+    float x1 = vertices[0][0];
+    float y1 = vertices[0][1];
+    float x2 = vertices[1][0];
+    float y2=vertices[1][1];
+    float x3 = vertices[2][0];
+    float y3 = vertices[2][1];
+    if (y1 == y2 && y2 == y3) return;
+    //Bubble sort on y-position
+    if (y1 > y2) { 
+        float tmp = x1;
+        x1 = x2;
+        x2 = tmp;
+        tmp = y1;
+        y1 = y2;
+        y2 = tmp;
+    }
+    if (y1 > y3) { 
+        float tmp = x1;
+        x1 = x3;
+        x3 = tmp;
+        tmp = y1;
+        y1 = y3;
+        y3 = tmp;
+    }
+    if (y2 > y3) {
+        float tmp = x3;
+        x3 = x2;
+        x2 = tmp;
+        tmp = y3;
+        y3 = y2;
+        y2 = tmp;
+    }
+
+    //divide triangle into two halves
+
+    int height = y3 - y1;
+
+    for (int y = y1; y <= y2; y++)
+    {
+        int partialHeight = y2 - y1 + 1; // +1 because both upper and lower limit is included
+
+        float alpha = (float)(y - y1) / height;// be careful with divisions by zero 
+        if (partialHeight != 0)
+        {
+            float beta = (float)(y - y1) / partialHeight;
+            int Ax = (x1 + (x3 - x1) * alpha), Ay = y1 + (y3 - y1) * alpha;
+            int Bx = x1 + (x2 - x1) * beta, By = y1 + (y2 - y1) * beta;
+            if (Ax > Bx) { 
+                int tmp = Ax;
+                Ax = Bx;
+                Bx = tmp;
+            }
+            for (int j = Ax; j <= Bx; j++)
+                m_canvas->putpixel(j, y,0, color);
+        }
+
+    }
+
+    for (int y = y2; y <= y3; y++)
+    {
+        int partialHeight = y3 - y2 + 1; // +1 because both upper and lower limit is included
+
+        float alpha = (float)(y - y1) / height;
+        if (partialHeight != 0)
+        {
+            float beta = (float)(y - y2) / partialHeight; // be careful with divisions by zero 
+
+            int Ax = x1 + (x3 - x1) * alpha, Ay = y1 + (y3 - y1) * alpha;
+            int Bx = x2 + (x3 - x2) * beta, By = y2 + (y3 - y2) * beta;
+            if (Ax > Bx) { 
+                int tmp = Ax;
+                Ax = Bx;
+                Bx = tmp;
+            }
+            for (int j = Ax; j <= Bx; j++)
+                m_canvas->putpixel(j, y,0, color);
+        }
+
+    }
 }
 
 void Triangle::wireframe_draw(){

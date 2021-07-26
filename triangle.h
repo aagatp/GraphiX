@@ -15,7 +15,4 @@ public:
 private:
     maths::vec3f color;
     Canvas* m_canvas;
-    // maths::vec3f v1;
-    // maths::vec3f v2;
-    // maths::vec3f v3;
 };
