@@ -17,6 +17,8 @@ namespace maths{
 
     vec3f normalize(vec3f a);
 
+    mat4f mul(mat4f a, mat4f b); 
+
     vec3f mul(mat4f a, vec3f b);
 
     vec3f mul(vec3f a, float num);
@@ -27,6 +29,8 @@ namespace maths{
 
     mat4f orthoproject();
 
+    mat4f perspective();
+
     mat4f rotate(float yaw, float, float);
 
     mat4f lookAt(vec3f eye, vec3f target, vec3f vUp);
@@ -34,4 +38,5 @@ namespace maths{
     mat4f translate(float tx, float ty, float tz);
     
     mat4f scale(float sx, float sy, float sz);
+
 }

@@ -4,14 +4,10 @@
 #include <iostream>
 #include <functional>
 
-struct Colors{
-
-};
 
 class Canvas{
 public:
     Canvas();
-    Canvas(int,char **);
     static void reshape(int,int);
     static void display();
     static void update(int);

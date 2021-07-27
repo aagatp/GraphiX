@@ -15,7 +15,7 @@ public:
     void rotate(float,float,float);
     void translate(float,float,float);
     void scale(float, float, float);
-    void perspective();
+    void applyTransform(maths::mat4f&);
 private:
     std::vector<Triangle> triangles;
     Canvas* canvas;

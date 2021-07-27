@@ -4,58 +4,86 @@
 #include <chrono>
 #include "mesh.h"
 
-// float lastX = 1920/2;
-// float lastY = 1080/2;
-// Camera camera = Camera(maths::vec3f{0.0f, 0.0f, 3.0f});
-// bool firstMouse = true;
+float lastX = 1920/2;
+float lastY = 1080/2;
 
-void mouseCallback(float xpos, float ypos)
-{
-    // if (firstMouse)
-    // {
-    //     lastX = xpos;
-    //     lastY = ypos;
-    //     firstMouse = false;
-    // }
+Camera camera = Camera(maths::vec3f{0.0f, 0.0f, 3.0f});
+bool firstMouse = true;
+Canvas* canvas;
+Mesh* mesh;
 
-    // float xoffset = xpos - lastX;
-    // float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
 
-    // lastX = xpos;
-    // lastY = ypos;
-
-    // camera.ProcessMouseMovement(xoffset, yoffset);
+void processKeys(unsigned char key, int x, int y){
+    std::cout << key<< " Hello Keys\n";
+    static float lastFrame = 0;
+    static float deltaTime = 0;
+    float currentFrame = glutGet(GLUT_ELAPSED_TIME);
+    deltaTime = (currentFrame - lastFrame)/1000;
+    lastFrame = currentFrame;
+    if (key == GLUT_KEY_END)
+        glutDestroyWindow(0);
+    if (key== 's')
+        camera.processKeyboard(FORWARD, deltaTime);
+    if (key== 'w')
+        camera.processKeyboard(BACKWARD, deltaTime);
+    if (key== 'd')
+        camera.processKeyboard(LEFT, deltaTime);
+    if (key== 'a')
+        camera.processKeyboard(RIGHT, deltaTime);
+    
 }
 
-// glfw: whenever the mouse scroll wheel scrolls, this callback is called
-// ----------------------------------------------------------------------
-void scrollCallback(float xoffset, float yoffset)
-{
-    // camera.ProcessMouseScroll(yoffset);
+// void processClick(int button, int state, int x, int y){
+
+// }
+
+void processMouse(int xpos, int ypos){
+    if (firstMouse)
+    {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
+    }
+
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+
+    lastX = xpos;
+    lastY = ypos;
+
+    camera.processMouseMovement(xoffset, yoffset);
 }
 
-void processEvents(float deltaTime){
-// {GLFWwindow* window, 
-//     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-//         glfwSetWindowShouldClose(window, true);
-//     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-//         camera.ProcessKeyboard(FORWARD, deltaTime);
+void renderer(){
+    
+    maths::mat4f view = camera.getViewMatrix();
+    maths::mat4f perspec = maths::perspective();
 
-//     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-//         camera.ProcessKeyboard(BACKWARD, deltaTime);
-//     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-//         camera.ProcessKeyboard(LEFT, deltaTime);
-//     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-//         camera.ProcessKeyboard(RIGHT, deltaTime);
+    maths::mat4f view_projection = maths::mul(perspec,view);
+    mesh->applyTransform(view_projection);
+
+    canvas->cleargrid();
+    mesh->draw();
+    canvas->display();
+    canvas->update(0);
+    canvas->cleargrid();
+
 }
 
 int main(int argc, char** argv){
-    Canvas canvas(argc,argv);
-    Mesh mesh(&canvas);
-    mesh.load("../res/videoship.obj");
-    mesh.translate(10.0,10.0,10.0);
-    mesh.scale(50.0,50.0,50.0);
-    mesh.draw();
-    canvas.update(0);
+    
+    glutInit(&argc, argv);
+    glutInitWindowSize(1920,1080);
+    glutInitWindowPosition(0, 0);
+    glutCreateWindow("Dharahara");
+    canvas = new Canvas();
+    mesh=new Mesh(canvas);
+    mesh->load("../res/videoship.obj");
+    mesh->translate(10.0,10.0,10.0);
+    mesh->scale(50.0,50.0,50.0);
+    glutDisplayFunc(renderer);
+    glutKeyboardFunc(processKeys);
+    // glutPassiveMotionFunc(processMouse);
     glutMainLoop();
+
 }

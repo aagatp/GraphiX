@@ -38,6 +38,17 @@ vec3f normalize(vec3f a){
     return product;
 }
 
+mat4f mul(mat4f a, mat4f b){
+    mat4f product = {0};
+    for (int i=0;i<4; i++){
+        for (int j=0; j<4; j++){
+            for (int k=0; k<4; k++){
+                product[i][j] += a[i][k]*b[k][j];
+            }
+        }
+    }
+    return product;
+}
 
 vec3f mul(mat4f a, vec3f b){
 
@@ -79,6 +90,17 @@ vec3f sub(vec3f a, vec3f b){
 mat4f orthoproject(){
     mat4f ortho= {{{1, 0, 0, 0},{0, 1, 0, 0},{0, 0, 0, 0},{0, 0, 0, 1}}};
     return ortho;
+}
+
+mat4f perspective(){
+    float zprp= 250, xprp = 100, yprp = 100;
+    float zvp=0;
+    float dp = zprp - zvp;
+    maths::mat4f persmatrix = {{{1,0,xprp/dp,-xprp*zvp/dp},
+                            {0,1,yprp/dp,-yprp*zvp/dp},
+                            {0,0,-zvp/dp,zvp*(zprp/dp)},
+                            {0,0,-1/dp,zprp/dp}}};               
+    return persmatrix;
 }
 
 mat4f rotate(float yaw, float pitch=0, float roll=0){

@@ -44,14 +44,10 @@ void Mesh::draw(){
     int count =0;
     for (auto& tri: triangles){
         count++;
-        for (int i=0;i<3; i++){
-            std::cout << tri.vertices[i][0] <<"\t"<< tri.vertices[i][1] <<"\t"<< tri.vertices[i][2]<< "\t";
-        }
-        std::cout <<"\n";
         tri.wireframe_draw();
         tri.draw();
     }
-    std::cout << count;
+    // std::cout << count;
 }
 
 void Mesh::translate(float tx, float ty, float tz){
@@ -80,17 +76,11 @@ void Mesh::scale(float sx, float sy, float sz){
     }
 }
 
-void Mesh::perspective(){
-    float zprp= 250, xprp = 0, yprp = 0;
-    float zvp=0;
-    float dp = zprp - zvp;
-    maths::mat4f persmatrix = {{{1,0,xprp/dp,-xprp*zvp/dp},
-                            {0,1,yprp/dp,-yprp*zvp/dp},
-                            {0,0,-zvp/dp,zvp*(zprp/dp)},
-                            {0,0,-1/dp,zprp/dp}}};               
+void Mesh::applyTransform(maths::mat4f& transform){
     for (auto& tri: triangles){
-        tri.vertices[0] = maths::mul(persmatrix,tri.vertices[0]);
-        tri.vertices[1] = maths::mul(persmatrix, tri.vertices[1]);
-        tri.vertices[2] = maths::mul(persmatrix, tri.vertices[2]);
+        tri.vertices[0] = maths::mul(transform, tri.vertices[0]);
+        tri.vertices[1] = maths::mul(transform, tri.vertices[1]);
+        tri.vertices[2] = maths::mul(transform, tri.vertices[2]);
     }
 }
+
