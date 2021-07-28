@@ -6,6 +6,7 @@
 #include <fstream>
 #include <sstream>
 #include "maths.h"
+#include "camera.h"
 
 class Mesh{
 public:
@@ -16,7 +17,14 @@ public:
     void translate(float,float,float);
     void scale(float, float, float);
     void applyTransform(maths::mat4f&);
+    void backFaceCulling(Triangle&);
+    bool isbackfaceCulling = true;
+    Camera* camera;
 private:
     std::vector<Triangle> triangles;
     Canvas* canvas;
+    bool isViewProject;
+    std::vector<Triangle> trisViewProject;
+
+    std::vector<Triangle> finalTris;
 };

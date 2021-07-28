@@ -3,7 +3,7 @@
 
 Triangle::Triangle(Canvas* canvas, maths::vec3f a, maths::vec3f b, maths::vec3f c){
     m_canvas = canvas;
-    color = {255,0,0};
+    color = {255,255,255};
     vertices = {a,b,c};
 }
 

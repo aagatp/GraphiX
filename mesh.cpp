@@ -38,14 +38,16 @@ void Mesh::load(std::string filename){
             triangles.push_back(Triangle{canvas,verts[f[0] - 1],verts[f[1] - 1],verts[f[2] - 1]});
         }
     }
+    trisViewProject = triangles;
 }
 
 void Mesh::draw(){
     int count =0;
-    for (auto& tri: triangles){
+    std::vector<Triangle> temptris = isViewProject ? finalTris : triangles;
+    for (auto& tri: temptris){
         count++;
         tri.wireframe_draw();
-        tri.draw();
+        // tri.draw();
     }
     // std::cout << count;
 }
@@ -72,15 +74,38 @@ void Mesh::scale(float sx, float sy, float sz){
         tri.vertices[0] = maths::mul(maths::scale(sx,sy,sz), tri.vertices[0]);
         tri.vertices[1] = maths::mul(maths::scale(sx,sy,sz), tri.vertices[1]);
         tri.vertices[2] = maths::mul(maths::scale(sx,sy,sz), tri.vertices[2]);
-
     }
 }
 
 void Mesh::applyTransform(maths::mat4f& transform){
+    isViewProject = true;
+    finalTris.clear();
+    int count = 0;
     for (auto& tri: triangles){
-        tri.vertices[0] = maths::mul(transform, tri.vertices[0]);
-        tri.vertices[1] = maths::mul(transform, tri.vertices[1]);
-        tri.vertices[2] = maths::mul(transform, tri.vertices[2]);
+        // Triangle tmptri();
+        trisViewProject[count].vertices[0] = maths::mul(transform, tri.vertices[0]);
+        trisViewProject[count].vertices[1] = maths::mul(transform, tri.vertices[1]);
+        trisViewProject[count].vertices[2] = maths::mul(transform, tri.vertices[2]);
+        count++;
+        
+        backFaceCulling(trisViewProject[count]);
     }
 }
 
+void Mesh::backFaceCulling(Triangle& tri){
+    // for(auto& triangle : cube.triangles){
+
+    maths::vec3f v = maths::sub(camera->Position,tri.vertices[2]);
+
+    // generating the normal vector of a triangle
+    maths::vec3f v1 = maths::sub(tri.vertices[1],tri.vertices[0]);
+    maths::vec3f v2 = maths::sub(tri.vertices[2],tri.vertices[0]);
+
+    maths::vec3f normal = maths::cross(v1,v2);
+    // normal.print();
+    float dotProduct = maths::dot(normal,v);
+    // std::cout<<dotProduct<<std::endl;
+    if(dotProduct >= 0){
+        finalTris.push_back(tri);
+    }
+}

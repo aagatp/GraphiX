@@ -8,14 +8,12 @@ bool* Canvas::grid = new bool[scrWidth * scrHeight];
 maths::vec3f* Canvas::color = new maths::vec3f[scrWidth * scrHeight];
 float* Canvas::zBuffer = new float[scrWidth * scrHeight];
 
-Canvas::Canvas(){
-    std::cout << "Hello Canvas\n";
-    // glutInit(&argc, argv);
-    // glutInitWindowSize(1920,1080);
-    // glutInitWindowPosition(0, 0);
-    // glutCreateWindow("Dharahara");
+Canvas::Canvas(int argc,char **argv){
+    glutInit(&argc, argv);
+    glutInitWindowSize(1920,1080);
+    glutInitWindowPosition(0, 0);
+    glutCreateWindow("Dharahara");
     glutReshapeFunc(Canvas::reshape);
-    // glutDisplayFunc(Canvas::display);
     for (GLint x = 0; x < scrWidth * scrHeight; x++)
     {
         grid[x] = false;
@@ -67,7 +65,6 @@ void Canvas::update(int value) {
     glutTimerFunc(1000 /fps, update, 0);
 }
 void Canvas::display() {
-    // std::cout << "Hello canvas\n";
     
     glBegin(GL_POINTS);
 
@@ -90,7 +87,6 @@ void Canvas::display() {
 
 void Canvas::cleargrid() {
     glClear( GL_COLOR_BUFFER_BIT);
-    glLoadIdentity();
     bool* newgrid = new bool[scrWidth*scrHeight];
     maths::vec3f* newcolor = new maths::vec3f[scrWidth*scrHeight]; 
     float* newzbuf = new float[scrWidth*scrHeight]; 
@@ -175,3 +171,4 @@ void Canvas::drawline(int x1, int y1, int x2, int y2, const maths::vec3f color)
     }
     putpixel(x, y,1, color);
 }
+

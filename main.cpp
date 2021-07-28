@@ -4,8 +4,8 @@
 #include <chrono>
 #include "mesh.h"
 
-float lastX = 1920/2;
-float lastY = 1080/2;
+float lastX = 800;
+float lastY = 500;
 
 Camera camera = Camera(maths::vec3f{0.0f, 0.0f, 3.0f});
 bool firstMouse = true;
@@ -14,7 +14,6 @@ Mesh* mesh;
 
 
 void processKeys(unsigned char key, int x, int y){
-    std::cout << key<< " Hello Keys\n";
     static float lastFrame = 0;
     static float deltaTime = 0;
     float currentFrame = glutGet(GLUT_ELAPSED_TIME);
@@ -38,6 +37,7 @@ void processKeys(unsigned char key, int x, int y){
 // }
 
 void processMouse(int xpos, int ypos){
+    // std::cout << xpos << "\t" << ypos << "\n";
     if (firstMouse)
     {
         lastX = xpos;
@@ -56,34 +56,31 @@ void processMouse(int xpos, int ypos){
 
 void renderer(){
     
-    maths::mat4f view = camera.getViewMatrix();
-    maths::mat4f perspec = maths::perspective();
-
-    maths::mat4f view_projection = maths::mul(perspec,view);
-    mesh->applyTransform(view_projection);
-
     canvas->cleargrid();
+
+    maths::mat4f view = camera.getViewMatrix();
+    maths::mat4f projection = maths::perspective();
+
+    maths::mat4f view_projection = maths::mul(projection,view);
+    mesh->applyTransform(view);
     mesh->draw();
+
     canvas->display();
     canvas->update(0);
-    canvas->cleargrid();
 
 }
 
 int main(int argc, char** argv){
     
-    glutInit(&argc, argv);
-    glutInitWindowSize(1920,1080);
-    glutInitWindowPosition(0, 0);
-    glutCreateWindow("Dharahara");
-    canvas = new Canvas();
+    canvas = new Canvas(argc, argv);
     mesh=new Mesh(canvas);
     mesh->load("../res/videoship.obj");
+    mesh->camera = &camera;
     mesh->translate(10.0,10.0,10.0);
     mesh->scale(50.0,50.0,50.0);
     glutDisplayFunc(renderer);
     glutKeyboardFunc(processKeys);
-    // glutPassiveMotionFunc(processMouse);
+    glutPassiveMotionFunc(processMouse);
     glutMainLoop();
 
 }

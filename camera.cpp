@@ -3,7 +3,6 @@
 
 Camera::Camera(maths::vec3f position , maths::vec3f up , float yaw , float pitch ) : Front(maths::vec3f{0.0f, 0.0f, -1.0f}), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
 {
-    std::cout << "Hello Camera\n";
     Position = position;
     WorldUp = up;
     Yaw = yaw;
@@ -13,7 +12,6 @@ Camera::Camera(maths::vec3f position , maths::vec3f up , float yaw , float pitch
 
 Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch) : Front(maths::vec3f{0.0f, 0.0f, -1.0f}), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
 {
-    std::cout << "Hello Camera\n";
 
     Position = maths::vec3f{posX, posY, posZ};
     WorldUp = maths::vec3f{upX, upY, upZ};
@@ -29,7 +27,7 @@ maths::mat4f Camera::getViewMatrix()
 
 void Camera::processKeyboard(CameraMovement direction, float deltaTime)
 {
-
+    std::cout << deltaTime;
     float velocity = MovementSpeed * deltaTime;
     if (direction == FORWARD)
         Position = maths::add(Position, maths::mul(Up,velocity));
@@ -41,13 +39,13 @@ void Camera::processKeyboard(CameraMovement direction, float deltaTime)
         Position = maths::add(Position, maths::mul(Right,velocity));
 }
 
-void Camera::processMouseMovement(float xoffset, float yoffset, bool constrainPitch /*= true*/)
+void Camera::processMouseMovement(float xoffset, float yoffset, bool constrainPitch)
 {
     xoffset *= MouseSensitivity;
     yoffset *= MouseSensitivity;
 
-    Yaw   += xoffset;
-    Pitch += yoffset;
+    Yaw   -= xoffset;
+    Pitch -= yoffset;
 
     // make sure that when pitch is out of bounds, screen doesn't get flipped
     if (constrainPitch)
@@ -81,6 +79,6 @@ void Camera::updateCameraVectors()
 
     Right = maths::normalize(maths::cross(Front, WorldUp));  
     // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
-    Up    = maths::normalize(maths::cross(Right, Front));
+    Up = maths::normalize(maths::cross(Right, Front));
 }
    

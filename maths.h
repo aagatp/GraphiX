@@ -5,6 +5,11 @@
 
 namespace maths{
     using vec3f = std::array<float, 3>;
+    using vec3i = std::array<int, 3>;
+
+    using vec2i = std::array<int,2>;
+    using vec2f = std::array<float,2>;
+    
     using mat4f = std::array<std::array<float,4>,4>;
 
     float radians(float degree);

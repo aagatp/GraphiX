@@ -93,13 +93,21 @@ mat4f orthoproject(){
 }
 
 mat4f perspective(){
-    float zprp= 250, xprp = 100, yprp = 100;
+    float zprp= 100, xprp = 0, yprp = 0;
     float zvp=0;
     float dp = zprp - zvp;
     maths::mat4f persmatrix = {{{1,0,xprp/dp,-xprp*zvp/dp},
                             {0,1,yprp/dp,-yprp*zvp/dp},
                             {0,0,-zvp/dp,zvp*(zprp/dp)},
-                            {0,0,-1/dp,zprp/dp}}};               
+                            {0,0,-1/dp,zprp/dp}}};        
+
+    maths::mat4f pers = {{
+                        {1,0,xprp/dp,-xprp*zvp/dp},
+                        {0,1,yprp/dp,-yprp*zvp/dp},
+                        {0,0,-zvp/dp,zvp*(zprp/dp)},
+                        {0,0,-1/dp,zprp/dp}
+                        }};        
+    
     return persmatrix;
 }
 
