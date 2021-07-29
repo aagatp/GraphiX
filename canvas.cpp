@@ -4,22 +4,22 @@
 int Canvas::scrHeight = 1080;
 int Canvas::scrWidth = 1920;
 int Canvas::fps = 60;
-bool* Canvas::grid = new bool[scrWidth * scrHeight];
-maths::vec3f* Canvas::color = new maths::vec3f[scrWidth * scrHeight];
-float* Canvas::zBuffer = new float[scrWidth * scrHeight];
+// bool* Canvas::grid = new bool[scrWidth * scrHeight];
+// maths::vec3f* Canvas::color = new maths::vec3f[scrWidth * scrHeight];
+// float* Canvas::zBuffer = new float[scrWidth * scrHeight];
 
 Canvas::Canvas(int argc,char **argv){
     glutInit(&argc, argv);
-    glutInitWindowSize(1920,1080);
+    glutInitWindowSize(scrWidth,scrHeight);
     glutInitWindowPosition(0, 0);
     glutCreateWindow("Dharahara");
     glutReshapeFunc(Canvas::reshape);
-    for (GLint x = 0; x < scrWidth * scrHeight; x++)
-    {
-        grid[x] = false;
-        color[x] = {0,0,0};
-        zBuffer[x] = std::numeric_limits<float>::min();
-    }
+    // for (GLint x = 0; x < scrWidth * scrHeight; x++)
+    // {
+    //     grid[x] = false;
+    //     color[x] = {0,0,0};
+    //     zBuffer[x] = std::numeric_limits<float>::min();
+    // }
 }
 void Canvas::reshape(int w, int h) {
     auto oldWidth = scrWidth;
@@ -27,30 +27,30 @@ void Canvas::reshape(int w, int h) {
     scrWidth = w;
     scrHeight = h;
 
-    bool* newGrid = new bool[scrWidth * scrHeight];
-    maths::vec3f* newcolor = new maths::vec3f[scrWidth * scrHeight];
-    float* newzBuffer = new float[scrWidth * scrHeight];
-    for (GLint x = 0; x <scrWidth ; ++x) {
-        for (GLint y = 0; y < scrHeight; ++y) {
-            if (x < oldWidth && x >= 0 && y < oldHeight && y >= 0) {
-                newGrid[x + y * scrWidth] = grid[x + y * oldWidth];
-                newcolor[x + y * scrWidth] = color[x + y * oldWidth];
-                newzBuffer[x + y * scrWidth] = zBuffer[x + y * oldWidth];
-            }
-            else {
-                newGrid[x + y *  scrWidth] = false;
-                newcolor[x + y *  scrWidth] = {0};
-                newzBuffer[x + y *  scrWidth] = std::numeric_limits<float>::min();
-            }
-        }
-    }
+    // bool* newGrid = new bool[scrWidth * scrHeight];
+    // maths::vec3f* newcolor = new maths::vec3f[scrWidth * scrHeight];
+    // float* newzBuffer = new float[scrWidth * scrHeight];
+    // for (GLint x = 0; x <scrWidth ; ++x) {
+    //     for (GLint y = 0; y < scrHeight; ++y) {
+    //         if (x < oldWidth && x >= 0 && y < oldHeight && y >= 0) {
+    //             newGrid[x + y * scrWidth] = grid[x + y * oldWidth];
+    //             newcolor[x + y * scrWidth] = color[x + y * oldWidth];
+    //             newzBuffer[x + y * scrWidth] = zBuffer[x + y * oldWidth];
+    //         }
+    //         else {
+    //             newGrid[x + y *  scrWidth] = false;
+    //             newcolor[x + y *  scrWidth] = {0};
+    //             newzBuffer[x + y *  scrWidth] = std::numeric_limits<float>::min();
+    //         }
+    //     }
+    // }
 
-    delete[] grid;
-    delete[] color;
-    delete[] zBuffer;
-    grid = newGrid;
-    color = newcolor;
-    zBuffer = newzBuffer;
+    // delete[] grid;
+    // delete[] color;
+    // delete[] zBuffer;
+    // grid = newGrid;
+    // color = newcolor;
+    // zBuffer = newzBuffer;
 
     glViewport(0, 0,  scrWidth,  scrHeight);
     glMatrixMode(GL_PROJECTION);
@@ -67,17 +67,24 @@ void Canvas::update(int value) {
 void Canvas::display() {
     
     glBegin(GL_POINTS);
-
-    for (GLint x = 0; x < scrWidth; ++x) {
-        for (GLint y = 0; y < scrHeight; ++y) {
-            if (grid[x + y * scrWidth]) {
-                maths::vec3f c = color[x + y * scrWidth];
-                glColor3f(c[0], c[1], c[2]);
-                glVertex2i(x, y);
-                // std::cout << x <<"\t"<< y << "\t" << c[0] <<"\n"; 
-                // showing coordinates but not drawing rn
-            }
-        }
+    // for (GLint x = 0; x < scrWidth; ++x) {
+    //     for (GLint y = 0; y < scrHeight; ++y) {
+    //         if (grid[x + y * scrWidth]) {
+    //             maths::vec3f c = color[x + y * scrWidth];
+    //             glColor3f(c[0], c[1], c[2]);
+    //             glVertex2i(x, y);
+    //         }
+    //     }
+    // }
+    while (!buffers.empty()){
+        Buffer tmp = buffers.back();
+        int x = tmp.cords[0];
+        int y = tmp.cords[1];
+        maths::vec3f col = tmp.color;
+        // std::cout << x << "\t" << y <<"\n";
+        buffers.pop_back();
+        glColor3f(col[0], col[1], col[2]);
+        glVertex2i(x, y);
     }
     glEnd();
     glFlush();
@@ -87,38 +94,43 @@ void Canvas::display() {
 
 void Canvas::cleargrid() {
     glClear( GL_COLOR_BUFFER_BIT);
-    bool* newgrid = new bool[scrWidth*scrHeight];
-    maths::vec3f* newcolor = new maths::vec3f[scrWidth*scrHeight]; 
-    float* newzbuf = new float[scrWidth*scrHeight]; 
+    // bool* newgrid = new bool[scrWidth*scrHeight];
+    // maths::vec3f* newcolor = new maths::vec3f[scrWidth*scrHeight]; 
+    // float* newzbuf = new float[scrWidth*scrHeight]; 
 
-    for (GLint x = 0; x <  scrWidth *  scrHeight; ++x) {
-        newgrid[x] = false;
-        newcolor[x] = {0,0,0};
-        newzbuf[x] = std::numeric_limits<float>::min();
-    }
-    delete[] grid;
-    delete[] color;
-    delete[] zBuffer;
+    // for (GLint x = 0; x <  scrWidth *  scrHeight; ++x) {
+    //     newgrid[x] = false;
+    //     newcolor[x] = {0,0,0};
+    //     newzbuf[x] = std::numeric_limits<float>::min();
+    // }
+    // delete[] grid;
+    // delete[] color;
+    // delete[] zBuffer;
 
-    grid = newgrid;
-    color = newcolor;
-    zBuffer = newzbuf;
-    glutPostRedisplay();
+    // grid = newgrid;
+    // color = newcolor;
+    // zBuffer = newzbuf;
+    // glutPostRedisplay();
 
 }
 
 void Canvas::putpixel(int x, int y,float zBuf, const maths::vec3f col) {
-    scrWidth = (int)scrWidth;
-    if (x < scrWidth && x >= 0 && y < scrHeight && y >= 0) {
-       if (zBuffer[x + y * scrWidth] <= zBuf)
-        {
-            // std::cout << x <<"\t" <<y << "\n";
-           color[x + y * scrWidth] = col;
-           grid[x + y * scrWidth] = true;
-           zBuffer[x + y * scrWidth] = zBuf;
-        }
-        
-    }
+    // scrWidth = (int)scrWidth;
+    // if (x < scrWidth && x >= 0 && y < scrHeight && y >= 0) {
+    //    if (zBuffer[x + y * scrWidth] <= zBuf)
+    //     {
+    //         // std::cout << x <<"\t" <<y << "\n";
+    //        color[x + y * scrWidth] = col;
+    //        grid[x + y * scrWidth] = true;
+    //        zBuffer[x + y * scrWidth] = zBuf;
+    //     } 
+
+    // }
+    // std::cout << x <<"\t" << y << "prn\n";
+    Buffer tmp;
+    tmp.cords = {x,y};
+    tmp.color = col;
+    buffers.push_back(tmp);
 }
 
 void Canvas::drawline(int x1, int y1, int x2, int y2, const maths::vec3f color)

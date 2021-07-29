@@ -13,77 +13,59 @@ Triangle::Triangle(Canvas* canvas, maths::vec3f a, maths::vec3f b, maths::vec3f 
     vertices = {a,b,c};
 }
 
-void Triangle::draw(){
-    
-    float x1 = vertices[0][0];
-    float y1 = vertices[0][1];
-    float x2 = vertices[1][0];
-    float y2=  vertices[1][1];
-    float x3 = vertices[2][0];
-    float y3 = vertices[2][1];
-    if (y1 == y2 && y2 == y3) return;
-    //Bubble sort on y-position
-    if (y1 > y2) { 
-        // x1 and y1 swap x2 and y2 
-        std::swap(x1,x2);
-        std::swap(y1,y2);
-    }
-    if (y1 > y3) { 
-        // x1 and y1 swap x3 and y3
-        std::swap(x1,x3);
-        std::swap(y1,y3);
-    }
-    if (y2 > y3) {
-        // x3 and y3 swap x2 and y2
-        std::swap(x2,x3);
-        std::swap(y2,y3);
-    }
+void Triangle::rasterize()
+{
+    maths::vec3f v1 = vertices[0];
+    maths::vec3f v2 = vertices[1];
+    maths::vec3f v3 = vertices[2];
 
-    //divide triangle into two halves
 
-    int height = y3 - y1;
+    if(v1[1] > v2[1]) {std::swap(v2, v1);}
+    if(v1[1] > v3[1]) {std::swap(v3, v1);}
+    if(v2[1] > v3[1]) {std::swap(v3, v2);}
 
-    for (int y = y1; y <= y2; y++)
+    if(int(v2[1]) == int(v3[1])){fillBottomFlatTriangle(v1, v2, v3);}
+    else if(int(v1[1]) == int(v2[1])){fillTopFlatTriangle(v1, v2, v3);}
+    else
     {
-        int partialHeight = y2 - y1 + 1; // +1 because both upper and lower limit is included
-
-        float alpha = (float)(y - y1) / height;// be careful with divisions by zero 
-        if (partialHeight != 0)
-        {
-            float beta = (float)(y - y1) / partialHeight;
-            int Ax = (x1 + (x3 - x1) * alpha), Ay = y1 + (y3 - y1) * alpha;
-            int Bx = x1 + (x2 - x1) * beta, By = y1 + (y2 - y1) * beta;
-            if (Ax > Bx) { 
-                int tmp = Ax;
-                Ax = Bx;
-                Bx = tmp;
-            }
-            for (int j = Ax; j <= Bx; j++)
-                m_canvas->putpixel(j, y,1, color);
-        }
-
+        
+        maths::vec3f v4 = {(v1[0] + ((float)(v2[1]-v1[1])/(float)(v3[1]-v1[1]))*(v3[0]-v1[0])),v2[1], 0};
+        fillBottomFlatTriangle(v1, v2, v4);
+        fillTopFlatTriangle(v2, v4, v3);
     }
+}
 
-    for (int y = y2; y <= y3; y++)
+void Triangle::fillBottomFlatTriangle(maths::vec3f v1, maths::vec3f v2, maths::vec3f v3)
+{
+    float invslope1 = (v2[0] - v1[0]) / (v2[1] - v1[1]);
+    // cout <<"a"<< (v2.x - v1.x) / (v2.y - v1.y)<<endl;
+    float invslope2 = (v3[0] - v1[0]) / (v3[1] - v1[1]);
+
+    float curx1 = v1[0];
+    float curx2 = v1[0];
+
+    for (int scanlineY = v1[1]; scanlineY < v2[1] - 0.5f; scanlineY++)
     {
-        int partialHeight = y3 - y2 + 1; // +1 because both upper and lower limit is included
+        
+        m_canvas->drawline(curx1, scanlineY, curx2, scanlineY, color);
+        curx1 += invslope1;
+        curx2 += invslope2;
+    }
+}
 
-        float alpha = (float)(y - y1) / height;
-        if (partialHeight != 0)
-        {
-            float beta = (float)(y - y2) / partialHeight; // be careful with divisions by zero 
+void Triangle::fillTopFlatTriangle(maths::vec3f v1, maths::vec3f v2, maths::vec3f v3)
+{
+    float invslope1 = (v3[0] - v1[0]) / (v3[1] - v1[1]);
+    float invslope2 = (v3[0] - v2[0]) / (v3[1] - v2[1]);
 
-            int Ax = x1 + (x3 - x1) * alpha, Ay = y1 + (y3 - y1) * alpha;
-            int Bx = x2 + (x3 - x2) * beta, By = y2 + (y3 - y2) * beta;
-            if (Ax > Bx) { 
-                int tmp = Ax;
-                Ax = Bx;
-                Bx = tmp;
-            }
-            for (int j = Ax; j <= Bx; j++)
-                m_canvas->putpixel(j, y,1, color);
-        }
+    float curx1 = v3[0];
+    float curx2 = v3[0];
 
+    for (int scanlineY = v3[1]; scanlineY > v1[1]; scanlineY--)
+    {
+        m_canvas->drawline(curx1, scanlineY, curx2, scanlineY, color);
+        curx1 -= invslope1;
+        curx2 -= invslope2;
     }
 }
 
