@@ -3,7 +3,7 @@
 
 Triangle::Triangle(Canvas* canvas, maths::vec3f a, maths::vec3f b, maths::vec3f c){
     m_canvas = canvas;
-    color = {255,255,255};
+    color = maths::normalize({220,220,220});
     vertices = {a,b,c};
 }
 
@@ -15,6 +15,7 @@ Triangle::Triangle(Canvas* canvas, maths::vec3f a, maths::vec3f b, maths::vec3f 
 
 void Triangle::rasterize()
 {
+    
     maths::vec3f v1 = vertices[0];
     maths::vec3f v2 = vertices[1];
     maths::vec3f v3 = vertices[2];

@@ -39,6 +39,7 @@ void Mesh::load(std::string filename){
         }
     }
     finalTris = triangles;
+
 }
 
 void Mesh::draw(){
@@ -46,7 +47,8 @@ void Mesh::draw(){
     for (auto& tri: finalTris){
         count++;
         tri.wireframe_draw();
-        // tri.rasterize();
+        // maths::printvec(tri.color);
+        tri.rasterize();
     }
 }
 
@@ -76,31 +78,31 @@ void Mesh::scale(float sx, float sy, float sz){
 }
 
 void Mesh::applyTransform(maths::mat4f& transform){
+    
     finalTris.clear();
+    int cullCount = 0;
+    //Lighting
+    // for (auto& tri:triangles){
+    //     tri.color = maths::normalize({220,220,220});
+    //     phongIlluminationModel(tri);
+    // }
 
-    for (auto& tri: triangles){
-        //Experimental
-
-        // tri.vertices[0] = maths::mul(transform, tri.vertices[0]);
-        // tri.vertices[1] = maths::mul(transform, tri.vertices[1]);
-        // tri.vertices[2] = maths::mul(transform, tri.vertices[2]);
-
-        //Original
+    for (auto& tri:triangles){
+        //View Transform
         Triangle temptri = tri;
         temptri.vertices[0] = maths::mul(transform, tri.vertices[0]);
         temptri.vertices[1] = maths::mul(transform, tri.vertices[1]);
         temptri.vertices[2] = maths::mul(transform, tri.vertices[2]);
-        backFaceCulling(temptri);
+
+        //Culling
+        if (!backFaceCulling(temptri)){
+            cullCount++;
+        }
     }
-    int counter =0 ;
-    for (auto& tri: finalTris){
-        counter++;
-        // phongIlluminationModel(tri);
-    }
-    std::cout << "The counter is: "<< counter;
+    // std::cout <<"\n"<< cullCount <<"\t";
 }
 
-void Mesh::backFaceCulling(Triangle& tri){
+bool Mesh::backFaceCulling(Triangle& tri){
     maths::vec3f v1 = tri.vertices[0];
     maths::vec3f v2 = tri.vertices[1];
     maths::vec3f v3 = tri.vertices[2];
@@ -109,41 +111,42 @@ void Mesh::backFaceCulling(Triangle& tri){
     centroid[0] = (v1[0] + v2[0] + v3[0]) / 3; 
     centroid[1] = (v1[1] + v2[1] + v3[1]) / 3; 
     centroid[2] = (v1[2] + v2[2] + v3[2]) / 3;
-    std::cout << centroid[0] << "\t" << centroid[1] << "\t" << centroid[2] << "\n";
 
-    maths::vec3f v =maths::normalize(maths::sub(camera->Position,centroid));
+    // normalize this shit whereever you can
+    maths::vec3f v =maths::normalize(maths::sub({0,0,-1000},centroid));
 
-    // generating the normal vector of a triangle
-    maths::vec3f ver1 = maths::sub(tri.vertices[0],tri.vertices[1]);
-    maths::vec3f ver2 = maths::sub(tri.vertices[0],tri.vertices[2]);
+    maths::vec3f ver1 = maths::sub(centroid,tri.vertices[1]);
+    maths::vec3f ver2 = maths::sub(centroid,tri.vertices[2]);
 
     maths::vec3f normal =maths::normalize(maths::cross(ver1,ver2));
     float dotProduct = maths::dot(normal,v);
+
     if(dotProduct < 0){
         finalTris.push_back(tri);
+        return false;
     }
+    return true;
 }
 
 float Mesh::calculateIntensity(maths::vec3f point, maths::vec3f Normal, maths::vec3f View,float specularExp){
     float i = 0.0;
-    maths::vec3f position = {500,1000,800};
-    maths::vec3f Ldir = maths::normalize(maths::sub(position, point));
-    // std::cout << point[0] << "\t" << point[1] << "\t" << point[2] << "\n";
-    float ambientInt = 0.4;
+    maths::vec3f position = {500,600,-200};
+    maths::vec3f Ldir = maths::normalize(maths::sub(position,point));
+    float ambientInt = 0.9;
     float pointInt = 0.5;
 
-    float ambientConstant = 0.8;
+    float ambientConstant = 1;
     float diffuseConstant = 0.7;
     float specularConstant = 0.8;
 
     float ambientLight = ambientConstant*ambientInt;
     
-    float diffuseLight = diffuseConstant* pointInt *maths::dot(Normal,Ldir);
+    float diffuseLight = maths::max(diffuseConstant* 1 *maths::dot(Normal,Ldir),0.0f);
 
-    maths::vec3f R = maths::sub(maths::mul(Normal,(2* maths::dot(Normal,Ldir))),Ldir);
+    maths::vec3f R = maths::normalize(maths::sub(maths::mul(Normal,(2* maths::dot(Normal,Ldir))),Ldir));
     float specularLight = specularConstant * pointInt * pow(maths::dot(R,View),specularExp);
     
-    float tmp = ambientLight+specularLight+diffuseLight;
+    float tmp = ambientLight+diffuseLight;
     tmp = tmp > 1 ? 1: tmp;
     return tmp;
 }
@@ -159,23 +162,24 @@ void Mesh::phongIlluminationModel(Triangle& tri){
         maths::vec3f centroid;
         centroid[0] = (v1[0] + v2[0] + v3[0]) / 3; 
         centroid[1] = (v1[1] + v2[1] + v3[1]) / 3; 
-        centroid[2] = (v1[2] + v2[2] + v3[2]) / 3; 
+        centroid[2] = (v1[2] + v2[2] + v3[2]) / 3;
 
         // std::cout << centroid[0] <<"\t";
 
-        maths::vec3f view = maths::normalize(maths::sub(camera->Position,centroid));
+        // maths::vec3f view = maths::normalize(maths::sub(camera->Position,centroid));
+        maths::vec3f view = maths::normalize(maths::sub({0,0,1000},centroid));
+
         
         // generating the normal vector of a triangle
-        maths::vec3f ver1 = maths::sub(v1,v2);
-        maths::vec3f ver2 = maths::sub(v1,v3);
+        maths::vec3f ver1 = maths::sub(centroid,v2);
+        maths::vec3f ver2 = maths::sub(centroid,v3);
 
         maths::vec3f normal = maths::normalize(maths::cross(ver1,ver2));
 
-        float intensity = calculateIntensity(centroid,normal,view,10);
-        // std::cout << "The intensity: " << intensity <<"\n";
+        float intensity = calculateIntensity(centroid,normal,view,2);
         maths::vec3f newColor = maths::mul(tri.color,intensity);
+        // maths::printvec(newColor);
 
         tri.color = newColor;
-        // triangle.print();
 }
     

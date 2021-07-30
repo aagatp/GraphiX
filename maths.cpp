@@ -30,7 +30,7 @@ float veclength(vec3f v){
 }
 
 vec3f normalize(vec3f a){
-    vec3f product = {0};
+    vec3f product = {0.0f,0.0f,0.0f};
     float length = maths::veclength(a);
     for (int i=0;i<3; i++){
         product[i] = a[i]/length;
@@ -64,7 +64,7 @@ vec3f mul(mat4f a, vec3f b){
 }
 
 vec3f mul(vec3f a, float num){
-    vec3f product = {};
+    vec3f product;
     for (int i=0;i<3;i++){
         product[i] = a[i]*num;
     }
@@ -84,6 +84,12 @@ vec3f sub(vec3f a, vec3f b){
     for (int i=0; i<3; i++){
         product[i] = a[i] - b[i];
     }
+    return product;
+}
+
+vec3f negate(vec3f a){
+    vec3f b = {0,0,0};
+    vec3f product = sub(b,a);
     return product;
 }
 
@@ -145,6 +151,20 @@ mat4f translate(float tx, float ty, float tz){
 mat4f scale(float sx, float sy, float sz){
     mat4f scaling = {{{sx,0,0,0},{0,sy,0,0},{0,0,sz,0},{0,0,0,1}}};
     return scaling;
+}
+
+void printvec(vec3f a){
+    std::cout << "\n";
+    std::cout << a[0] << "\t" << a[1] << "\t"<< a[2] << "\t";
+}
+
+float max(float a, float b){
+    if (a>b){
+        return a;
+    }
+    else{
+        return b;
+    }
 }
 
 }

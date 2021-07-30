@@ -2,6 +2,7 @@
 
 #include <array>
 #include <cmath>
+#include <iostream>
 
 namespace maths{
     using vec3f = std::array<float, 3>;
@@ -32,6 +33,8 @@ namespace maths{
 
     vec3f sub(vec3f a, vec3f b);
 
+    vec3f negate(vec3f a);
+
     mat4f orthoproject();
 
     mat4f perspective();
@@ -43,5 +46,9 @@ namespace maths{
     mat4f translate(float tx, float ty, float tz);
     
     mat4f scale(float sx, float sy, float sz);
+
+    void printvec(vec3f);
+
+    float max(float,float);
 
 }

@@ -53,11 +53,10 @@ void Canvas::reshape(int w, int h) {
     // zBuffer = newzBuffer;
 
     glViewport(0, 0,  scrWidth,  scrHeight);
-    glMatrixMode(GL_PROJECTION);
+    // glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluOrtho2D(0.0,  scrWidth, 0.0,  scrHeight);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+    // glMatrixMode(GL_MODELVIEW);
     glutPostRedisplay();
 }
 void Canvas::update(int value) {
@@ -67,6 +66,8 @@ void Canvas::update(int value) {
 void Canvas::display() {
     
     glBegin(GL_POINTS);
+    glLoadIdentity();
+
     // for (GLint x = 0; x < scrWidth; ++x) {
     //     for (GLint y = 0; y < scrHeight; ++y) {
     //         if (grid[x + y * scrWidth]) {
@@ -81,9 +82,9 @@ void Canvas::display() {
         int x = tmp.cords[0];
         int y = tmp.cords[1];
         maths::vec3f col = tmp.color;
-        // std::cout << x << "\t" << y <<"\n";
         buffers.pop_back();
-        glColor3f(col[0], col[1], col[2]);
+        
+        glColor4f(col[0],col[1],col[2],1);
         glVertex2i(x, y);
     }
     glEnd();
@@ -135,6 +136,7 @@ void Canvas::putpixel(int x, int y,float zBuf, const maths::vec3f col) {
 
 void Canvas::drawline(int x1, int y1, int x2, int y2, const maths::vec3f color)
 {
+
     int dx, dy;
     int steps, k;
     dx = abs(x2 - x1);

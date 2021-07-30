@@ -17,16 +17,13 @@ public:
     void translate(float,float,float);
     void scale(float, float, float);
     void applyTransform(maths::mat4f&);
-    void backFaceCulling(Triangle&);
+    bool backFaceCulling(Triangle&);
     float calculateIntensity(maths::vec3f point, maths::vec3f Normal, maths::vec3f View,float specularExp);
     void phongIlluminationModel(Triangle& tri);
     
-    bool isbackfaceCulling = true;
     Camera* camera;
 private:
     std::vector<Triangle> triangles;
     Canvas* canvas;
-    // std::vector<Triangle> trisViewProject;
-    
     std::vector<Triangle> finalTris;
 };

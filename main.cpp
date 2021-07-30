@@ -12,6 +12,7 @@ bool firstMouse = true;
 Canvas* canvas;
 Mesh* mesh;
 float deltaTime = 0;
+bool mouseLeftDown=false;
 
 void processKeys(unsigned char key, int x, int y){
     
@@ -28,9 +29,37 @@ void processKeys(unsigned char key, int x, int y){
     
 }
 
-// void processClick(int button, int state, int x, int y){
+void mouseCB(int button,int state,int xpos, int ypos){
+    // std::cout << xpos << "\t" << ypos << "\n";
+        if (firstMouse == true)
+        {
+            lastX = xpos;
+            lastY = ypos;
+            firstMouse = false;
+        }
+    if ((button == GLUT_LEFT_BUTTON))
+    {
+        if (state == GLUT_DOWN) {
 
-// }
+            mouseLeftDown = true;
+        }
+        else {
+            mouseLeftDown = false;
+        }
+
+
+    }
+
+}
+void mouseMotionCB(int xpos, int ypos) {
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+
+    lastX = xpos;
+    lastY = ypos;
+
+    camera.processMouseMovement(xoffset, yoffset);
+ }
 
 void processMouse(int xpos, int ypos){
     // std::cout << xpos << "\t" << ypos << "\n";
@@ -74,13 +103,15 @@ int main(int argc, char** argv){
     
     canvas = new Canvas(argc, argv);
     mesh=new Mesh(canvas);
-    mesh->load("../res/videoship.obj");
+    mesh->load("../res/dharahara.obj");
     mesh->camera = &camera;
-    mesh->translate(1.0,1.0,1.0);
+    // mesh->translate(1.0,1.0,1.0);
     mesh->scale(100.0,100.0,100.0);
     glutDisplayFunc(renderer);
     glutKeyboardFunc(processKeys);
-    // glutPassiveMotionFunc(processMouse);
+    glutPassiveMotionFunc(processMouse);
+    // glutMouseFunc(mouseCB);
+    // glutMotionFunc(mouseMotionCB);
     glutMainLoop();
 
 }

@@ -6,7 +6,7 @@ class Triangle{
 public:
     Triangle(Canvas*,maths::vec3f a, maths::vec3f b, maths::vec3f c);
     Triangle(Canvas*,maths::vec3f a, maths::vec3f b, maths::vec3f c, maths::vec3f mcolor);
-    void setColor(int col);
+    void setColor(maths::vec3f col);
     void setVertex(maths::vec3f a, maths::vec3f b, maths::vec3f c);
     void rasterize();
     void wireframe_draw();
