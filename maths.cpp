@@ -123,19 +123,16 @@ mat4f rotate(float yaw, float pitch=0, float roll=0){
 
 mat4f lookAt(vec3f eye, vec3f target, vec3f vUp={0,1,0})
 {
-    // Calculate new forward direction
     vec3f forward = maths::normalize(maths::sub(eye,target));
-    vec3f left = maths::normalize(maths::cross(vUp,forward));
-    // Calculate new Up direction
-    vec3f up = maths::cross(forward,left);
+    vec3f right = maths::normalize(maths::cross(vUp,forward));
+    vec3f up = maths::cross(forward,right);
 
     mat4f view ={{
-                {left[0],left[1],left[2],-maths::dot(left,eye)},
+                {right[0],right[1],right[2],-maths::dot(right,eye)},
                 {up[0],up[1],up[2],-maths::dot(up,eye)},
                 {forward[0],forward[1],forward[2],-maths::dot(forward,eye)},
                 {0,0,0,1}
             }};
-    // Construct Dimensioning and Translation Matrix	
     return view;
 
 }

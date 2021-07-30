@@ -26,8 +26,7 @@ public:
 private:
     std::vector<Triangle> triangles;
     Canvas* canvas;
-    bool isViewProject;
-    std::vector<Triangle> trisViewProject;
-
+    // std::vector<Triangle> trisViewProject;
+    
     std::vector<Triangle> finalTris;
 };

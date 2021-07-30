@@ -7,18 +7,14 @@
 float lastX = 800;
 float lastY = 500;
 
-Camera camera = Camera(maths::vec3f{0.0f, 0.0f, 0.0f});
+Camera camera = Camera(maths::vec3f{0.0f, 0.0f, 3.0f});
 bool firstMouse = true;
 Canvas* canvas;
 Mesh* mesh;
-
+float deltaTime = 0;
 
 void processKeys(unsigned char key, int x, int y){
-    static float lastFrame = 0;
-    static float deltaTime = 0;
-    float currentFrame = glutGet(GLUT_ELAPSED_TIME);
-    deltaTime = (currentFrame - lastFrame)/1000;
-    lastFrame = currentFrame;
+    
     if (key == GLUT_KEY_END)
         glutDestroyWindow(0);
     if (key== 's')
@@ -55,7 +51,11 @@ void processMouse(int xpos, int ypos){
 }
 
 void renderer(){
-    
+    static float lastFrame = 0;
+    float currentFrame = glutGet(GLUT_ELAPSED_TIME);
+    deltaTime = (currentFrame - lastFrame)/1000;
+    lastFrame = currentFrame;
+
     canvas->cleargrid();
 
     maths::mat4f view = camera.getViewMatrix();
@@ -76,12 +76,11 @@ int main(int argc, char** argv){
     mesh=new Mesh(canvas);
     mesh->load("../res/videoship.obj");
     mesh->camera = &camera;
-    mesh->translate(2.0,2.0,2.0);
+    mesh->translate(1.0,1.0,1.0);
     mesh->scale(100.0,100.0,100.0);
-    // mesh->rotate(0,maths::radians(30),0);
     glutDisplayFunc(renderer);
     glutKeyboardFunc(processKeys);
-    glutPassiveMotionFunc(processMouse);
+    // glutPassiveMotionFunc(processMouse);
     glutMainLoop();
 
 }

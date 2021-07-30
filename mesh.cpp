@@ -38,18 +38,16 @@ void Mesh::load(std::string filename){
             triangles.push_back(Triangle{canvas,verts[f[0] - 1],verts[f[1] - 1],verts[f[2] - 1]});
         }
     }
-    trisViewProject = triangles;
+    finalTris = triangles;
 }
 
 void Mesh::draw(){
     int count =0;
-    std::vector<Triangle> temptris = isViewProject ? finalTris : triangles;
-    for (auto& tri: temptris){
+    for (auto& tri: finalTris){
         count++;
         tri.wireframe_draw();
         // tri.rasterize();
     }
-    // std::cout << count;
 }
 
 void Mesh::translate(float tx, float ty, float tz){
@@ -78,30 +76,31 @@ void Mesh::scale(float sx, float sy, float sz){
 }
 
 void Mesh::applyTransform(maths::mat4f& transform){
-    isViewProject = true;
     finalTris.clear();
-    int count = 0;
+
     for (auto& tri: triangles){
-        // Triangle tmptri();
-        trisViewProject[count].vertices[0] = maths::mul(transform, tri.vertices[0]);
-        trisViewProject[count].vertices[1] = maths::mul(transform, tri.vertices[1]);
-        trisViewProject[count].vertices[2] = maths::mul(transform, tri.vertices[2]);
-        count++;
-        
-        backFaceCulling(trisViewProject[count]);
+        //Experimental
+
+        // tri.vertices[0] = maths::mul(transform, tri.vertices[0]);
+        // tri.vertices[1] = maths::mul(transform, tri.vertices[1]);
+        // tri.vertices[2] = maths::mul(transform, tri.vertices[2]);
+
+        //Original
+        Triangle temptri = tri;
+        temptri.vertices[0] = maths::mul(transform, tri.vertices[0]);
+        temptri.vertices[1] = maths::mul(transform, tri.vertices[1]);
+        temptri.vertices[2] = maths::mul(transform, tri.vertices[2]);
+        backFaceCulling(temptri);
     }
     int counter =0 ;
     for (auto& tri: finalTris){
         counter++;
-        phongIlluminationModel(tri);
-        // std::cout << "colors\n";
-
+        // phongIlluminationModel(tri);
     }
-    std::cout << "The counter is: "<< counter <<"\n" ;
+    std::cout << "The counter is: "<< counter;
 }
 
 void Mesh::backFaceCulling(Triangle& tri){
-    // for(auto& triangle : cube.triangles){
     maths::vec3f v1 = tri.vertices[0];
     maths::vec3f v2 = tri.vertices[1];
     maths::vec3f v3 = tri.vertices[2];
@@ -110,6 +109,7 @@ void Mesh::backFaceCulling(Triangle& tri){
     centroid[0] = (v1[0] + v2[0] + v3[0]) / 3; 
     centroid[1] = (v1[1] + v2[1] + v3[1]) / 3; 
     centroid[2] = (v1[2] + v2[2] + v3[2]) / 3;
+    std::cout << centroid[0] << "\t" << centroid[1] << "\t" << centroid[2] << "\n";
 
     maths::vec3f v =maths::normalize(maths::sub(camera->Position,centroid));
 
@@ -128,7 +128,7 @@ float Mesh::calculateIntensity(maths::vec3f point, maths::vec3f Normal, maths::v
     float i = 0.0;
     maths::vec3f position = {500,1000,800};
     maths::vec3f Ldir = maths::normalize(maths::sub(position, point));
-    std::cout << point[0] << "\t" << point[1] << "\t" << point[2] << "\n";
+    // std::cout << point[0] << "\t" << point[1] << "\t" << point[2] << "\n";
     float ambientInt = 0.4;
     float pointInt = 0.5;
 
@@ -172,7 +172,7 @@ void Mesh::phongIlluminationModel(Triangle& tri){
         maths::vec3f normal = maths::normalize(maths::cross(ver1,ver2));
 
         float intensity = calculateIntensity(centroid,normal,view,10);
-        std::cout << "The intensity: " << intensity <<"\n";
+        // std::cout << "The intensity: " << intensity <<"\n";
         maths::vec3f newColor = maths::mul(tri.color,intensity);
 
         tri.color = newColor;
