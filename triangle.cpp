@@ -1,6 +1,16 @@
 #include "triangle.h"
 #include <algorithm>
 
+Triangle::Triangle(Canvas* canvas){
+    m_canvas = canvas;
+    color = maths::normalize({220,220,220});
+    vertices = {{
+        {0,0,0},
+        {0,0,0},
+        {0,0,0}
+    }};
+}
+
 Triangle::Triangle(Canvas* canvas, maths::vec3f a, maths::vec3f b, maths::vec3f c){
     m_canvas = canvas;
     color = maths::normalize({220,220,220});
@@ -11,6 +21,18 @@ Triangle::Triangle(Canvas* canvas, maths::vec3f a, maths::vec3f b, maths::vec3f 
     m_canvas = canvas;
     color = {mcolor[0],mcolor[1],mcolor[2]};
     vertices = {a,b,c};
+}
+
+void Triangle::setVertex(maths::vec3f a, maths::vec3f b, maths::vec3f c){
+    vertices = {a,b,c};
+}
+
+void Triangle::setNormals(maths::vec3f na, maths::vec3f nb, maths::vec3f nc){
+    normals = {na,nb,nc};
+}
+
+void Triangle::setTexCoords(maths::vec2f uv){
+    
 }
 
 void Triangle::rasterize()
@@ -39,7 +61,6 @@ void Triangle::rasterize()
 void Triangle::fillBottomFlatTriangle(maths::vec3f v1, maths::vec3f v2, maths::vec3f v3)
 {
     float invslope1 = (v2[0] - v1[0]) / (v2[1] - v1[1]);
-    // cout <<"a"<< (v2.x - v1.x) / (v2.y - v1.y)<<endl;
     float invslope2 = (v3[0] - v1[0]) / (v3[1] - v1[1]);
 
     float curx1 = v1[0];

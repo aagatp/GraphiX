@@ -27,7 +27,6 @@ maths::mat4f Camera::getViewMatrix()
 
 void Camera::processKeyboard(CameraMovement direction, float deltaTime)
 {
-    std::cout << deltaTime;
     float velocity = MovementSpeed * deltaTime;
     if (direction == FORWARD)
         Position = maths::add(Position, maths::mul(Up,velocity));
@@ -37,6 +36,22 @@ void Camera::processKeyboard(CameraMovement direction, float deltaTime)
         Position = maths::sub(Position, maths::mul(Right,velocity));
     if (direction == RIGHT)
         Position = maths::add(Position, maths::mul(Right,velocity));
+
+    if (direction == ZOOMIN){
+        Zoom += MovementSpeed *deltaTime;
+        if (Zoom < 1.0f)
+            Zoom = 1.0f;
+        if (Zoom > 45.0f)
+            Zoom = 45.0f; 
+    }
+    if (direction == ZOOMOUT){
+        Zoom -= MovementSpeed *deltaTime;
+        if (Zoom < 1.0f)
+            Zoom = 1.0f;
+        if (Zoom > 45.0f)
+            Zoom = 45.0f; 
+    }
+
 }
 
 void Camera::processMouseMovement(float xoffset, float yoffset, bool constrainPitch)
@@ -58,15 +73,6 @@ void Camera::processMouseMovement(float xoffset, float yoffset, bool constrainPi
 
     // update Front, Right and Up Vectors using the updated Euler angles
     updateCameraVectors();
-}
-
-void Camera::processMouseScroll(float yoffset)
-{
-    Zoom -= (float)yoffset;
-    if (Zoom < 1.0f)
-        Zoom = 1.0f;
-    if (Zoom > 45.0f)
-        Zoom = 45.0f; 
 }
 
 void Camera::updateCameraVectors()

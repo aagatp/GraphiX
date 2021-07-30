@@ -12,14 +12,17 @@ class Mesh{
 public:
     Mesh(Canvas*);
     void load(std::string);
+    void parse(std::string);
     void draw();
     void rotate(float,float,float);
     void translate(float,float,float);
     void scale(float, float, float);
     void applyTransform(maths::mat4f&);
     bool backFaceCulling(Triangle&);
-    float calculateIntensity(maths::vec3f point, maths::vec3f Normal, maths::vec3f View,float specularExp);
-    void phongIlluminationModel(Triangle& tri);
+    float calculateIntensity(maths::vec3f point, maths::vec3f normal, maths::vec3f view);
+    void flatShading(Triangle& tri);
+    void gouraudShading(Triangle& tri);
+    void phongShading(Triangle& tri);
     
     Camera* camera;
 private:

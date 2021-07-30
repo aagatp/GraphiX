@@ -7,7 +7,9 @@ enum CameraMovement {
     FORWARD,
     BACKWARD,
     LEFT,
-    RIGHT
+    RIGHT,
+    ZOOMIN,
+    ZOOMOUT
 };
 
 // Default camera values
@@ -15,7 +17,7 @@ const float YAW         = -90.0f;
 const float PITCH       =  0.0f;
 const float SPEED       =  500.0f;
 const float SENSITIVITY =  0.02f;
-const float ZOOM        =  50.0f;
+const float ZOOM        =  20.0f;
 
 
 class Camera
@@ -40,7 +42,6 @@ public:
 
     void processKeyboard(CameraMovement direction, float deltaTime);
     void processMouseMovement(float xoffset, float yoffset, bool constrainPitch = true);
-    void processMouseScroll(float yoffset);
 
 private:
     // calculates the front vector from the Camera's (updated) Euler Angles
