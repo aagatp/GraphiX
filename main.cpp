@@ -56,6 +56,7 @@ void processMouse(int xpos, int ypos){
 
 void renderer(){
 
+    //Calculate deltatime and framePerSecond
     static float lastFrame = 0;
     float currentFrame = glutGet(GLUT_ELAPSED_TIME);
     deltaTime = (currentFrame - lastFrame)/1000;
@@ -83,9 +84,10 @@ int main(int argc, char** argv){
 
     //Creating mesh
     mesh=new Mesh(canvas);
-    mesh->load("../res/videoship.obj");
+    // mesh->load("../res/cube.obj");
+    mesh->parse("../res/cubeUV.obj");
     mesh->camera = camera;
-    mesh->translate(1.0,1.0,1.0);
+    // mesh->translate(1.0,1.0,1.0);
     mesh->scale(100.0,100.0,100.0);
 
     //Glut specific functions

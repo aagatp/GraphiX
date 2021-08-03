@@ -10,11 +10,12 @@ public:
     void setColor(maths::vec3f col);
     void setVertex(maths::vec3f a, maths::vec3f b, maths::vec3f c);
     void setNormals(maths::vec3f na, maths::vec3f nb, maths::vec3f nc);
-    void setTexCoords(maths::vec2f uv);
+    void setTexCoords(maths::vec2f, maths::vec2f, maths::vec2f);
     void rasterize();
     void wireframe_draw();
     std::array <maths::vec3f,3> vertices;
     std::array <maths::vec3f,3> normals;
+    std::array <maths::vec2f,3> texCoords;
     maths::vec3f color;
     bool isGouraudShading = false;
 private:
