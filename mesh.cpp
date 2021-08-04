@@ -55,6 +55,7 @@ void Mesh::parse(std::string filename){
     std::vector<maths::vec3f> normals;
     std::vector<maths::vec2f> textures;
     
+    int count =1;
     while (!in.eof())
     {
         //get one line at a time
@@ -64,38 +65,18 @@ void Mesh::parse(std::string filename){
 
         char trash;
         if (!line.compare(0, 2, "v "))  //starts with v<space>
-        {
+        {   
+
+            std::cout << count;           
             iss >> trash; // first character is v
             maths::vec3f v;
             // followed by xyz co-ords
             iss >> v[0];
             iss >> v[1];
             iss >> v[2];
+            // maths::printvec(v);
             verts.push_back(v);
-        }
-        else if (!line.compare(0, 2, "f ")) //starts with f<space>
-        {
-            // std::vector<maths::vec3i> f;
-            // maths::vec3i temp;
-            std::vector<maths::vec2i> f;
-            maths::vec2i temp;
-            iss >> trash; //first charecter is f
-            // iss >> f[0] >> f[1] >> f[2];
-
-            // while (iss >> temp[0] >> trash >> temp[1] >> trash >> temp[2])
-            while (iss >> temp[0] >> trash >> trash >> temp[1])  // in the form vert/vertTex/norm (vert is read, the rest are treated as trash)
-              // in the form vert/vertTex/norm (vert is read, the rest are treated as trash)
-            {
-                //in wavefront obj all indices start at 1, not zero
-                temp[0]--;   //vert
-                temp[1]--;   //texture
-                temp[2]--; // normal 
-                f.push_back(temp);
-            }
-            Triangle tri(canvas);
-            tri.setVertex(verts[f[0][0]-1],verts[f[1][0]-1],verts[f[2][0]-1]);
-            tri.setNormals(normals[f[0][1]-1],normals[f[1][1]-1],normals[f[2][1]-1]);
-
+            count++;
         }
         else if (!line.compare(0, 3, "vt "))    //starts with vt<space>
         {
@@ -115,8 +96,31 @@ void Mesh::parse(std::string filename){
             iss >> n[2];
             normals.push_back(n);
         }
-       
-    }
+        else if (!line.compare(0, 2, "f ")) //starts with f<space>
+        {
+            std::vector<maths::vec3i> f;
+            maths::vec3i temp;
+
+            iss >> trash; //first charecter is f
+
+            while (iss >> temp[0] >> trash >> temp[1] >> trash >> temp[2])
+            // in the form vert/vertTex/norm (vert is read, the rest are treated as trash)
+            {
+                //in wavefront obj all indices start at 1, not zero
+                temp[0]--;   //vert
+                temp[1]--;   //texture
+                temp[2]--; // normal 
+                f.push_back(temp);
+            }
+            Triangle tri(canvas);
+            tri.setVertex(verts[f[0][0]],verts[f[1][0]],verts[f[2][0]]);
+            // std::cout  << f[0][0] <<'\n';       
+            tri.setTexCoords(textures[f[0][1]],textures[f[1][1]],textures[f[2][1]]);
+            tri.setNormals(normals[f[0][2]],normals[f[1][2]],normals[f[2][2]]);
+            triangles.push_back(tri);
+        }
+    }   
+    finalTris = triangles;
 }
 
 void Mesh::draw(){
@@ -124,7 +128,10 @@ void Mesh::draw(){
     for (auto& tri: finalTris){
         count++;
         tri.wireframe_draw();
-         tri.rasterize();
+        tri.rasterize();
+        // maths::printvec(tri.vertices[0]);
+        // maths::printvec(tri.vertices[1]);
+        // maths::printvec(tri.vertices[2]);
     }
 }
 
@@ -189,7 +196,7 @@ bool Mesh::backFaceCulling(Triangle& tri){
     centroid[2] = (v1[2] + v2[2] + v3[2]) / 3;
 
     // normalize this shit whereever you can
-    maths::vec3f v =maths::normalize(maths::sub({0,0,-1000},centroid));
+    maths::vec3f v =maths::normalize(maths::sub({0,0,1000},centroid));
 
     maths::vec3f ver1 = maths::sub(centroid,tri.vertices[1]);
     maths::vec3f ver2 = maths::sub(centroid,tri.vertices[2]);
@@ -197,7 +204,7 @@ bool Mesh::backFaceCulling(Triangle& tri){
     maths::vec3f normal =maths::normalize(maths::cross(ver1,ver2));
     float dotProduct = maths::dot(normal,v);
 
-    if(dotProduct < 0){
+    if(dotProduct <= 0){
         finalTris.push_back(tri);
         return false;
     }
@@ -207,7 +214,7 @@ bool Mesh::backFaceCulling(Triangle& tri){
 float Mesh::calculateIntensity(maths::vec3f point, maths::vec3f normal, maths::vec3f view){
 
     float i = 0.0;
-    maths::vec3f position = {500,600,-200};
+    maths::vec3f position = {500,600,200};
     maths::vec3f l_dir = maths::normalize(maths::sub(position,point));
     float ambientInt = 0.9;
     float pointInt = 0.5;
@@ -261,6 +268,7 @@ void Mesh::gouraudShading(Triangle& tri){
     for (auto& vertex: tri.vertices){
         maths::vec3f view = maths::normalize(maths::sub({0,0,1000},vertex));
         intensity[count] = calculateIntensity(vertex,tri.normals[count],view);
+        count++;
     }
     
 }

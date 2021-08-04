@@ -12,36 +12,40 @@ Canvas::Canvas(int argc,char **argv){
     glutInitWindowSize(scrWidth,scrHeight);
     glutInitWindowPosition(0, 0);
     glutCreateWindow("Dharahara");
+
+    //This function is called for window resize. Also called when first window created
     glutReshapeFunc(Canvas::reshape);
 
 }
 
 void Canvas::reshape(int w, int h) {
 
-    //Reshapes the windows and viewport
+    //Is called when window is created or resized
     auto oldWidth = scrWidth;
     auto oldHeight = scrHeight;
     scrWidth = w;
     scrHeight = h;
 
+    //Load essentials for window creation and resizing
     glViewport(0, 0,  scrWidth,  scrHeight);
     glLoadIdentity();
     gluOrtho2D(0.0,  scrWidth, 0.0,  scrHeight);
 
 }
 
-void Canvas::update(int value) {
-    int fps = 60;
+void Canvas::update(int val) {
+    //The fps given below is maximum fps limit
+    int maxfps = 60;
 
     glClear( GL_COLOR_BUFFER_BIT);
     glutPostRedisplay();
-    glutTimerFunc(1000 /fps, update, 0);
+    glutTimerFunc(1000 /maxfps, update, 0);
 }
 
 void Canvas::display() {
     
+    //this function draws into the screen the pixel buffer stored
     glBegin(GL_POINTS);
-    glLoadIdentity();
 
     while (!buffers.empty()){
         Buffer tmp = buffers.back();
@@ -54,13 +58,14 @@ void Canvas::display() {
         glVertex2i(x, y);
     }
     glEnd();
-    glFlush();
     glutSwapBuffers();
+    
 }
 
 
 void Canvas::putpixel(int x, int y,float zBuf, const maths::vec3f col) {
     
+    //Stores the pixels in buffers to draw later in display func
     Buffer tmp;
     tmp.cords = {x,y};
     tmp.color = col;
@@ -69,12 +74,13 @@ void Canvas::putpixel(int x, int y,float zBuf, const maths::vec3f col) {
 
 void Canvas::drawline(int x1, int y1, int x2, int y2, const maths::vec3f color)
 {
-
+    // Bresenham line drawing algorithm
+    
     int dx, dy;
     int steps, k;
     dx = abs(x2 - x1);
     dy = abs(y2 - y1);
-    //Sets increment/decrement : stepsize
+
     int lx, ly;
 
     if (x2 > x1) { lx = 1; }
@@ -82,9 +88,10 @@ void Canvas::drawline(int x1, int y1, int x2, int y2, const maths::vec3f color)
 
     if (y2 > y1) { ly = 1; }
     else { ly = -1; }
-    //initialize
+
     int x = x1, y = y1;
-    //slope<1
+    
+    //slope is less than 1
     if (dx > dy) {
         int p = 2 * dy - dx;
         for (int k = 0; k <= dx; k++) {
@@ -100,7 +107,7 @@ void Canvas::drawline(int x1, int y1, int x2, int y2, const maths::vec3f color)
             }
         }
     }
-    //if slope>=1
+    // slope is greater than equal to 1
     else {
         int p = 2 * dx - dy;
         for (int k = 0; k <= dy; k++) {

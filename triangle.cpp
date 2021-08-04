@@ -25,14 +25,17 @@ Triangle::Triangle(Canvas* canvas, maths::vec3f a, maths::vec3f b, maths::vec3f 
 
 void Triangle::setVertex(maths::vec3f a, maths::vec3f b, maths::vec3f c){
     vertices = {a,b,c};
+    maths::printvec(a);
 }
 
 void Triangle::setNormals(maths::vec3f na, maths::vec3f nb, maths::vec3f nc){
+    // std::cout << "Hello Normal:\n";
     normals = {na,nb,nc};
 }
 
-void Triangle::setTexCoords(maths::vec2f uv){
-    
+void Triangle::setTexCoords(maths::vec2f uv1,maths::vec2f uv2,maths::vec2f uv3){
+    // std::cout << "Hello Texture:\n";
+    texCoords = {uv1,uv2,uv3};
 }
 
 void Triangle::rasterize()
