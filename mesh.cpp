@@ -124,7 +124,7 @@ void Mesh::draw(){
     for (auto& tri: finalTris){
         count++;
         tri.wireframe_draw();
-        tri.rasterize();
+         tri.rasterize();
     }
 }
 
