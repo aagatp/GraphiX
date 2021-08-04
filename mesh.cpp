@@ -127,7 +127,7 @@ void Mesh::draw(){
     int count =0;
     for (auto& tri: finalTris){
         count++;
-        tri.wireframe_draw();
+        // tri.wireframe_draw();
         tri.rasterize();
         // maths::printvec(tri.vertices[0]);
         // maths::printvec(tri.vertices[1]);
@@ -160,28 +160,40 @@ void Mesh::scale(float sx, float sy, float sz){
     }
 }
 
-void Mesh::applyTransform(maths::mat4f& transform){
+void Mesh::setProjection(maths::mat4f proj){
+    projection = proj;
+}
+void Mesh::setView(maths::mat4f vi){
+    view= vi;
+}
+void Mesh::update(){
     
     finalTris.clear();
     int cullCount = 0;
 
-    //Lighting
-    for (auto& tri:triangles){
-        tri.color = maths::normalize({220,220,220});
-        flatShading(tri);
-    }
-
     for (auto& tri:triangles){
         //View Transform
         Triangle temptri = tri;
-        temptri.vertices[0] = maths::mul(transform, tri.vertices[0]);
-        temptri.vertices[1] = maths::mul(transform, tri.vertices[1]);
-        temptri.vertices[2] = maths::mul(transform, tri.vertices[2]);
+        temptri.vertices[0] = maths::mul(view, tri.vertices[0]);
+        temptri.vertices[1] = maths::mul(view, tri.vertices[1]);
+        temptri.vertices[2] = maths::mul(view, tri.vertices[2]);
 
         //Culling
         if (!backFaceCulling(temptri)){
-            cullCount++;
+            finalTris.push_back(temptri);
         }
+    }
+
+    for (auto& tri:finalTris){
+        //Shading
+        tri.color = maths::normalize({220,220,220});
+        flatShading(tri);
+
+        //Projection Transformation
+        tri.vertices[0] = maths::mul(projection, tri.vertices[0]);
+        tri.vertices[1] = maths::mul(projection, tri.vertices[1]);
+        tri.vertices[2] = maths::mul(projection, tri.vertices[2]);
+
     }
 }
 
@@ -196,7 +208,7 @@ bool Mesh::backFaceCulling(Triangle& tri){
     centroid[2] = (v1[2] + v2[2] + v3[2]) / 3;
 
     // normalize this shit whereever you can
-    maths::vec3f v =maths::normalize(maths::sub({0,0,1000},centroid));
+    maths::vec3f v =maths::normalize(maths::sub({0,0,10},centroid));
 
     maths::vec3f ver1 = maths::sub(centroid,tri.vertices[1]);
     maths::vec3f ver2 = maths::sub(centroid,tri.vertices[2]);
@@ -205,7 +217,6 @@ bool Mesh::backFaceCulling(Triangle& tri){
     float dotProduct = maths::dot(normal,v);
 
     if(dotProduct <= 0){
-        finalTris.push_back(tri);
         return false;
     }
     return true;
@@ -247,14 +258,9 @@ void Mesh::flatShading(Triangle& tri){
     centroid[1] = (v1[1] + v2[1] + v3[1]) / 3; 
     centroid[2] = (v1[2] + v2[2] + v3[2]) / 3;
 
-    maths::vec3f view = maths::normalize(maths::sub({0,0,1000},centroid));
+    maths::vec3f view = maths::normalize(maths::sub({0,0,10},centroid));
 
-    
-    // generating the normal vector of a triangle
-    maths::vec3f ver1 = maths::sub(centroid,v2);
-    maths::vec3f ver2 = maths::sub(centroid,v3);
-
-    maths::vec3f normal = maths::normalize(maths::cross(ver1,ver2));
+    maths::vec3f normal = maths::getnormal(centroid,v2,v3);
 
     float intensity = calculateIntensity(centroid,normal,view);
     maths::vec3f newColor = maths::mul(tri.color,intensity);
@@ -263,13 +269,13 @@ void Mesh::flatShading(Triangle& tri){
 }
     
 void Mesh::gouraudShading(Triangle& tri){
-    float intensity[3];
+    maths::vec3f intensity;
     int count = 0;
     for (auto& vertex: tri.vertices){
-        maths::vec3f view = maths::normalize(maths::sub({0,0,1000},vertex));
+        maths::vec3f view = maths::normalize(maths::sub({0,0,10},vertex));
         intensity[count] = calculateIntensity(vertex,tri.normals[count],view);
         count++;
     }
-    
+    tri.setIntensity(intensity);
 }
 

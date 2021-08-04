@@ -38,6 +38,7 @@ void Canvas::update(int val) {
     int maxfps = 60;
 
     glClear( GL_COLOR_BUFFER_BIT);
+    // glClearColor(0,0,0,1);
     glutPostRedisplay();
     glutTimerFunc(1000 /maxfps, update, 0);
 }

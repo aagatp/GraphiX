@@ -98,7 +98,7 @@ mat4f orthoproject(){
     return ortho;
 }
 
-mat4f perspective(){
+mat4f persproject(){
     float zprp= 100, xprp = 0, yprp = 0;
     float zvp=0;
     float dp = zprp - zvp;
@@ -116,6 +116,20 @@ mat4f perspective(){
     
     return persmatrix;
 }
+
+mat4f perspective(float fov, float aspect){
+    float zNear = 0.1;
+    float zFar = 100.0f;
+
+    mat4f projection = {{
+        {1/(aspect*tan(fov/2)),0,0,0},
+        {0,1/tan(fov/2),0,0},
+        {0,0,-(zFar+zNear)/(zFar-zNear),-1},
+        {0,0,-(2*zFar*zNear)/(zFar-zNear),0}
+        }};
+    return projection;
+}
+
 
 mat4f rotate(float yaw, float pitch=0, float roll=0){
     // std::cout << "Hello";
@@ -165,6 +179,32 @@ float max(float a, float b){
     else{
         return b;
     }
+}
+
+std::vector<float> interpolate (float i0, float d0, float il, float dl) {
+    std::vector<float> values;
+
+    if (i0 == il) {
+        values.push_back(d0);
+        return values;
+    }
+
+    float a= (dl - d0) / (il - i0);
+    float d = d0;
+
+    for (int i = i0; i<il;i++) {
+        values.push_back(d);
+        d = d + a;
+    }
+    return values;
+}
+
+vec3f getnormal(maths::vec3f point1, maths::vec3f point2, maths::vec3f point3){
+    maths::vec3f ver1 = maths::sub(point1,point2);
+    maths::vec3f ver2 = maths::sub(point1,point3);
+
+    maths::vec3f normal = maths::normalize(maths::cross(ver1,ver2));
+    return normal;
 }
 
 }

@@ -63,10 +63,12 @@ void renderer(){
     lastFrame = currentFrame;
 
     maths::mat4f view = camera->getViewMatrix();
-    maths::mat4f projection = maths::perspective();
-
-    maths::mat4f view_projection = maths::mul(projection,view);
-    mesh->applyTransform(view);
+    maths::mat4f projection = maths::perspective(camera->Zoom, (float)canvas->scrWidth/canvas->scrHeight);
+    // maths::mat4f projection = maths::persproject();
+    // maths::mat4f view_projection = maths::mul(projection,view);
+    mesh->setView(view);
+    mesh->setProjection(projection);
+    mesh->update();
     mesh->draw();
 
     canvas->update();
@@ -80,14 +82,14 @@ int main(int argc, char** argv){
     canvas = new Canvas(argc, argv);
 
     //Camera setup
-    camera = new Camera(maths::vec3f{0.0f, 0.0f, 3.0f});
+    camera = new Camera(maths::vec3f{0.0f, 0.0f, 10.0f});
 
     //Creating mesh
     mesh=new Mesh(canvas);
     // mesh->load("../res/cube.obj");
-    mesh->parse("../res/cubeUV.obj");
+    mesh->parse("../res/sphere.obj");
     mesh->camera = camera;
-    // mesh->translate(1.0,1.0,1.0);
+    mesh->translate(1.0,1.0,1.0);
     mesh->scale(100.0,100.0,100.0);
 
     //Glut specific functions
