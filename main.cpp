@@ -4,6 +4,9 @@
 #include <chrono>
 #include "mesh.h"
 
+float lastX = 800;
+float lastY = 500;
+bool mouseLeftDown = false;
 
 //Global Setup
 Canvas* canvas;
@@ -31,19 +34,36 @@ void processKeys(unsigned char key, int x, int y){
         camera->processKeyboard(ZOOMOUT,deltaTime);
 }
 
-void processMouse(int xpos, int ypos){
+void processMouse(int xpos, int ypos) {
 
     static float lastX = 800;
     static float lastY = 500;
     static bool firstMouse = true;
+}
 
-    if (firstMouse)
+void mouseCB(int button,int state,int xpos, int ypos)
+{
+    // std::cout << xpos << "\t" << ypos << "\n";
+        /*if (firstMouse == true)
+        {
+            lastX = xpos;
+            lastY = ypos;
+            firstMouse = false;
+        }*/
+    if ((button == GLUT_LEFT_BUTTON))
     {
-        lastX = xpos;
-        lastY = ypos;
-        firstMouse = false;
+        if (state == GLUT_DOWN) {
+
+            mouseLeftDown = true;
+        }
+        else {
+            mouseLeftDown = false;
+        }
+
     }
 
+}
+void mouseMotionCB(int xpos, int ypos) {
     float xoffset = xpos - lastX;
     float yoffset = lastY - ypos; 
     // reversed since y-coordinates go from bottom to top
@@ -51,8 +71,10 @@ void processMouse(int xpos, int ypos){
     lastX = xpos;
     lastY = ypos;
 
+    //firstMouse = false;
+
     camera->processMouseMovement(xoffset, yoffset);
-}
+ }
 
 void renderer(){
 
@@ -95,7 +117,11 @@ int main(int argc, char** argv){
     //Glut specific functions
     glutDisplayFunc(renderer);
     glutKeyboardFunc(processKeys);
-    glutPassiveMotionFunc(processMouse);
+    //glutPassiveMotionFunc(processMouse);
+    //glutPassiveMotionFunc(processMouse);
+    glutMouseFunc(mouseCB);
+    glutMotionFunc(mouseMotionCB);
+    //glutMouseFunc(processMouse);
     glutMainLoop();
 
 }
