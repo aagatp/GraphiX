@@ -118,8 +118,8 @@ mat4f persproject(){
 }
 
 mat4f perspective(float fov, float aspect){
-    float zNear = 0.1;
-    float zFar = 100.0f;
+    float zNear = 1.0f;
+    float zFar = 10.0f;
 
     mat4f projection = {{
         {1/(aspect*tan(fov/2)),0,0,0},

@@ -67,7 +67,7 @@ void Mesh::parse(std::string filename){
         if (!line.compare(0, 2, "v "))  //starts with v<space>
         {   
 
-            std::cout << count;           
+            // std::cout << count;           
             iss >> trash; // first character is v
             maths::vec3f v;
             // followed by xyz co-ords
@@ -172,28 +172,28 @@ void Mesh::update(){
     int cullCount = 0;
 
     for (auto& tri:triangles){
-        //View Transform
         Triangle temptri = tri;
+
+        //View Transform
         temptri.vertices[0] = maths::mul(view, tri.vertices[0]);
         temptri.vertices[1] = maths::mul(view, tri.vertices[1]);
         temptri.vertices[2] = maths::mul(view, tri.vertices[2]);
 
-        //Culling
-        if (!backFaceCulling(temptri)){
-            finalTris.push_back(temptri);
-        }
-    }
-
-    for (auto& tri:finalTris){
-        //Shading
-        tri.color = maths::normalize({220,220,220});
-        flatShading(tri);
-
         //Projection Transformation
-        tri.vertices[0] = maths::mul(projection, tri.vertices[0]);
-        tri.vertices[1] = maths::mul(projection, tri.vertices[1]);
-        tri.vertices[2] = maths::mul(projection, tri.vertices[2]);
+        temptri.vertices[0] = maths::mul(projection, temptri.vertices[0]);
+        temptri.vertices[1] = maths::mul(projection, temptri.vertices[1]);
+        temptri.vertices[2] = maths::mul(projection, temptri.vertices[2]);
 
+        //Culling
+        if (backFaceCulling(temptri)){
+            continue;
+        }
+
+        //Shading
+        temptri.color = maths::normalize({220,220,220});
+        flatShading(temptri);
+
+        finalTris.push_back(temptri);
     }
 }
 
@@ -239,7 +239,7 @@ float Mesh::calculateIntensity(maths::vec3f point, maths::vec3f normal, maths::v
     float diffuseLight = maths::max(diffuseConstant* 1 *maths::dot(normal,l_dir),0.0f);
 
     maths::vec3f reflection = maths::normalize(maths::sub(maths::mul(normal,(2* maths::dot(normal,l_dir))),l_dir));
-    float specularLight = specularConstant * pointInt * pow(maths::dot(reflection,view),4);
+    float specularLight = specularConstant * pointInt * pow(maths::dot(reflection,view),32);
     
     float tmp = ambientLight+diffuseLight;
     tmp = tmp > 1 ? 1: tmp;
