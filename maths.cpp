@@ -4,7 +4,11 @@
 namespace maths{
 
 float radians(float degree){
-    return 3.1416*degree/180;
+    return (3.1416*degree)/180;
+}
+
+float degrees(float radian){
+    return (180*radian)/3.1416;
 }
 
 float dot(vec3f a, vec3f b){
@@ -52,14 +56,16 @@ mat4f mul(mat4f a, mat4f b){
 
 vec3f mul(mat4f a, vec3f b){
 
-    float homogenous_b[] = {b[0],b[1],b[2],1};
+    float homogenous_b[4] = {b[0],b[1],b[2],1};
     float homogenous_product[4] = {0};
     for (int i=0;i<4;i++){
         for (int j=0; j<4; j++){
             homogenous_product[i] += a[i][j] * homogenous_b[j]; 
         }
     }
-    vec3f product = {homogenous_product[0],homogenous_product[1],homogenous_product[2]};
+    float tmp = homogenous_product[3];
+    // float tmp = 1;
+    vec3f product = {homogenous_product[0]/tmp,homogenous_product[1]/tmp,homogenous_product[2]/tmp};
     return product;
 }
 
@@ -98,35 +104,34 @@ mat4f orthoproject(){
     return ortho;
 }
 
-mat4f persproject(){
-    float zprp= 100, xprp = 0, yprp = 0;
-    float zvp=0;
+mat4f persproject(maths::vec3f eye){
+    float zprp = eye[2]; float xprp = eye[0]; float yprp= eye[1];
+    float zvp=-1;
     float dp = zprp - zvp;
     maths::mat4f persmatrix = {{{1,0,xprp/dp,-xprp*zvp/dp},
                             {0,1,yprp/dp,-yprp*zvp/dp},
                             {0,0,-zvp/dp,zvp*(zprp/dp)},
-                            {0,0,-1/dp,zprp/dp}}};        
-
-    maths::mat4f pers = {{
-                        {1,0,xprp/dp,-xprp*zvp/dp},
-                        {0,1,yprp/dp,-yprp*zvp/dp},
-                        {0,0,-zvp/dp,zvp*(zprp/dp)},
-                        {0,0,-1/dp,zprp/dp}
-                        }};        
+                            {0,0,-1/dp,zprp/dp}}};             
     
     return persmatrix;
 }
 
 mat4f perspective(float fov, float aspect){
-    float zNear = 1.0f;
-    float zFar = 10.0f;
-
+    float zNear = 0.1f;
+    float zFar = -30.0f;
+    float zRange = zNear- zFar;
     mat4f projection = {{
         {1/(aspect*tan(fov/2)),0,0,0},
         {0,1/tan(fov/2),0,0},
-        {0,0,-(zFar+zNear)/(zFar-zNear),-1},
-        {0,0,-(2*zFar*zNear)/(zFar-zNear),0}
+        {0,0,(zFar+zNear)/zRange,(2*zFar*zNear)/zRange},
+        {0,0,-1,0}
         }};
+    // mat4f projection = {{
+    //     {1/(aspect*tan(fov/2)),0,0,0},
+    //     {0,1/tan(fov/2),0,0},
+    //     {0,0,(zFar+zNear)/zRange,-1},
+    //     {0,0,(2*zFar*zNear)/zRange,0}
+    //     }};
     return projection;
 }
 
@@ -141,6 +146,28 @@ mat4f rotate(float yaw, float pitch=0, float roll=0){
     return rotation;
 }
 
+mat4f roty(float yaw){
+    mat4f yrotation = {{
+        {cos(yaw),0,sin(yaw),0},
+        {0,       1,0,      0},
+        {-sin(yaw),0, cos(yaw), 0},
+        {0, 0, 0, 1}
+    }};
+    return yrotation;
+}
+
+
+mat4f rotz(float pitch){
+    mat4f zrotation = {{
+        {cos(pitch), -sin(pitch), 0,        0},
+        {sin(pitch), cos(pitch),  0,        0},
+        {0,          0,           1,      0},
+        {0, 0, 0, 1}
+    }};
+    return zrotation;
+}
+
+
 mat4f lookAt(vec3f eye, vec3f target, vec3f vUp={0,1,0})
 {
     vec3f forward = maths::normalize(maths::sub(eye,target));
@@ -153,6 +180,14 @@ mat4f lookAt(vec3f eye, vec3f target, vec3f vUp={0,1,0})
                 {forward[0],forward[1],forward[2],-maths::dot(forward,eye)},
                 {0,0,0,1}
             }};
+    
+    // mat4f view ={{
+    //             {right[0],right[1],right[2],0},
+    //             {up[0],up[1],up[2],0},
+    //             {forward[0],forward[1],forward[2],0},
+    //             {maths::dot(right,eye),maths::dot(up,eye),maths::dot(forward,eye),1}
+    //         }};
+
     return view;
 
 }

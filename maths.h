@@ -20,6 +20,8 @@ namespace maths{
 
     float radians(float degree);
 
+    float degrees(float);
+
     float dot(vec3f a, vec3f b);
 
     vec3f cross(vec3f a, vec3f b);
@@ -44,7 +46,7 @@ namespace maths{
 
     mat4f perspective(float, float);
 
-    mat4f persproject();
+    mat4f persproject(maths::vec3f pos);
 
     mat4f rotate(float yaw, float, float);
 
