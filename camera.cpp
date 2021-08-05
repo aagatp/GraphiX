@@ -1,90 +1,90 @@
+#include <GL/glut.h>
 #include "camera.h"
-#include <iostream>
 
-Camera::Camera(maths::vec3f position , maths::vec3f up , float yaw , float pitch ) : Front(maths::vec3f{0.0f, 0.0f, -1.0f}), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
+Camera::Camera()
 {
-    Position = position;
-    WorldUp = up;
-    Yaw = yaw;
-    Pitch = pitch;
-    updateCameraVectors();
+    m_pos          = {0.0f, 0.0f, 0.0f};
+    m_front       = {0.0f, 0.0f, -1.0f};
+    m_up           = {0.0f, 1.0f, 0.0f};
+    m_right        = maths::normalize(maths::cross(m_front,m_up));
 }
 
-Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch) : Front(maths::vec3f{0.0f, 0.0f, -1.0f}), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
-{
 
-    Position = maths::vec3f{posX, posY, posZ};
-    WorldUp = maths::vec3f{upX, upY, upZ};
-    Yaw = yaw;
-    Pitch = pitch;
-    updateCameraVectors();
+void Camera::processKeyboard(unsigned char key,float dt)
+{
+    float m_velocity = m_speed*dt;
+    switch (key) {  
+
+        case 'w':
+            m_pos = maths::add(m_pos,maths::mul(m_up,m_velocity));
+            break;
+
+        case 's':
+            m_pos = maths::sub(m_pos,maths::mul(m_up,m_velocity));
+            break;
+
+        case 'a':
+            m_pos = maths::add(m_pos,maths::mul(m_right,m_velocity));
+            break;
+
+        case 'd':
+            m_pos = maths::sub(m_pos,maths::mul(m_right,m_velocity));
+            break;
+
+        case 'r':
+            m_pos = maths::add(m_pos,maths::mul(m_front,m_velocity));
+            break;
+
+        case 'f':
+            m_pos = maths::sub(m_pos,maths::mul(m_front,m_velocity));
+            break;
+
+        case 'z':
+            zoom += 10*dt;
+            if (zoom>150.0f)
+                zoom = 150.0f;
+            break;
+
+        case 'x':
+            zoom -= 10*dt;
+            if (zoom<5.0f)
+                zoom = 5.0f;
+            break;
+            
+        case 'q':
+            exit(0);
+    }
 }
+
+void Camera::processMouse(int xoffset, int yoffset)
+{
+    float mouseSensitivity = 0.02f;
+    xoffset *= mouseSensitivity;
+    yoffset *= mouseSensitivity;
+
+    yaw   -= xoffset;
+    pitch -= yoffset;
+
+ 
+    if (pitch > 89.0f)
+        pitch = 89.0f;
+    if (pitch < -89.0f)
+        pitch = -89.0f;
+
+    maths::vec3f front;
+    front[0] = cos(maths::radians(yaw)) * cos(maths::radians(pitch));
+    front[1] = sin(maths::radians(pitch));
+    front[2] = sin(maths::radians(yaw)) * cos(maths::radians(pitch));
+
+    m_front = maths::normalize(front);
+    m_right = maths::normalize(maths::cross(m_front, m_up));  
+    m_up = maths::normalize(maths::cross(m_right,m_front));
+}
+
 
 maths::mat4f Camera::getViewMatrix()
 {
-    return maths::lookAt(Position, maths::add(Position,Front), Up);
+    maths::mat4f view;
+    view = maths::lookAt(m_pos, maths::add(m_pos,m_front), m_up);
+    return view;
 }
-
-void Camera::processKeyboard(CameraMovement direction, float deltaTime)
-{
-    float velocity = MovementSpeed * deltaTime;
-    if (direction == FORWARD)
-        Position = maths::add(Position, maths::mul(Up,velocity));
-    if (direction == BACKWARD)
-        Position = maths::sub(Position, maths::mul(Up,velocity));
-    if (direction == LEFT)
-        Position = maths::sub(Position, maths::mul(Right,velocity));
-    if (direction == RIGHT)
-        Position = maths::add(Position, maths::mul(Right,velocity));
-
-    if (direction == ZOOMIN){
-        Zoom += MovementSpeed *deltaTime;
-        if (Zoom < 1.0f)
-            Zoom = 1.0f;
-        if (Zoom > 45.0f)
-            Zoom = 45.0f; 
-    }
-    if (direction == ZOOMOUT){
-        Zoom -= MovementSpeed *deltaTime;
-        if (Zoom < 1.0f)
-            Zoom = 1.0f;
-        if (Zoom > 45.0f)
-            Zoom = 45.0f; 
-    }
-
-}
-
-void Camera::processMouseMovement(float xoffset, float yoffset, bool constrainPitch)
-{
-    xoffset *= MouseSensitivity;
-    yoffset *= MouseSensitivity;
-
-    Yaw   -= xoffset;
-    Pitch -= yoffset;
-
-    // make sure that when pitch is out of bounds, screen doesn't get flipped
-    if (constrainPitch)
-    {
-        if (Pitch > 89.0f)
-            Pitch = 89.0f;
-        if (Pitch < -89.0f)
-            Pitch = -89.0f;
-    }
-
-    // update Front, Right and Up Vectors using the updated Euler angles
-    updateCameraVectors();
-}
-
-void Camera::updateCameraVectors()
-{
-    maths::vec3f front;
-    front[0] = cos(maths::radians(Yaw)) * cos(maths::radians(Pitch));
-    front[1] = sin(maths::radians(Pitch));
-    front[2] = sin(maths::radians(Yaw)) * cos(maths::radians(Pitch));
-    Front = maths::normalize(front);
-
-    Right = maths::normalize(maths::cross(Front, WorldUp));  
-    // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
-    Up = maths::normalize(maths::cross(Right, Front));
-}
-   

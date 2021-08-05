@@ -6,3 +6,5 @@ compile.sh
 .vscode
 
 build.sh
+
+res/*

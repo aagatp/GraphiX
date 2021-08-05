@@ -24,9 +24,15 @@ public:
     void gouraudShading(Triangle& tri);
     void phongShading(Triangle& tri);
     
+    void update();
+    void setView(maths::mat4f);
+    void setProjection(maths::mat4f);
+
     Camera* camera;
 private:
     std::vector<Triangle> triangles;
     Canvas* canvas;
     std::vector<Triangle> finalTris;
+    maths::mat4f view;
+    maths::mat4f projection;
 };

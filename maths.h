@@ -1,19 +1,26 @@
 #pragma once
 
 #include <array>
+#include <vector>
 #include <cmath>
 #include <iostream>
 
 namespace maths{
-    using vec3f = std::array<float, 3>;
-    using vec3i = std::array<int, 3>;
-
     using vec2i = std::array<int,2>;
     using vec2f = std::array<float,2>;
+
+    using vec3f = std::array<float, 3>;
+    using vec3i = std::array<int, 3>;
     
+    using vec4f = std::array<float,4>;
+    using vec4i = std::array<int,4>;
+
     using mat4f = std::array<std::array<float,4>,4>;
+    using mat4i = std::array<std::array<int,4>,4>;
 
     float radians(float degree);
+
+    float degrees(float);
 
     float dot(vec3f a, vec3f b);
 
@@ -37,7 +44,9 @@ namespace maths{
 
     mat4f orthoproject();
 
-    mat4f perspective();
+    mat4f perspective(float, float);
+
+    mat4f persproject(maths::vec3f pos);
 
     mat4f rotate(float yaw, float, float);
 
@@ -51,4 +60,7 @@ namespace maths{
 
     float max(float,float);
 
+    std::vector<float> interpolate(float, float, float, float);
+
+    vec3f getnormal(vec3f, vec3f, vec3f);
 }
