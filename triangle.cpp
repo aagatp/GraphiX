@@ -25,7 +25,7 @@ Triangle::Triangle(Canvas* canvas, maths::vec3f a, maths::vec3f b, maths::vec3f 
 
 void Triangle::setVertex(maths::vec3f a, maths::vec3f b, maths::vec3f c){
     vertices = {a,b,c};
-    maths::printvec(a);
+    //maths::printvec(a);
 }
 
 void Triangle::setNormals(maths::vec3f na, maths::vec3f nb, maths::vec3f nc){

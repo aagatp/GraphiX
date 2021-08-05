@@ -64,16 +64,20 @@ void mouseCB(int button,int state,int xpos, int ypos)
 
 }
 void mouseMotionCB(int xpos, int ypos) {
-    float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; 
-    // reversed since y-coordinates go from bottom to top
+    if (mouseLeftDown) {
 
-    lastX = xpos;
-    lastY = ypos;
+        float xoffset = xpos - lastX;
+        float yoffset = lastY - ypos; 
+        // reversed since y-coordinates go from bottom to top
 
-    //firstMouse = false;
+        lastX = xpos;
+        lastY = ypos;
 
-    camera->processMouseMovement(xoffset, yoffset);
+        //firstMouse = false;
+
+        camera->processMouseMovement(xoffset, yoffset);
+    }
+    
  }
 
 void renderer(){
@@ -88,7 +92,8 @@ void renderer(){
     maths::mat4f projection = maths::perspective();
 
     maths::mat4f view_projection = maths::mul(projection,view);
-    mesh->applyTransform(view);
+    //mesh->applyTransform(view);
+    mesh->applyTransform(view_projection);
     mesh->draw();
 
     canvas->update();
@@ -107,10 +112,10 @@ int main(int argc, char** argv){
     //Creating mesh
     mesh=new Mesh(canvas);
     //mesh->load("../res/dharahara.obj");
-    mesh->parse("../res/dharahara.obj");
+    mesh->parse("../res/dharaharaWithPlane.obj");
     mesh->camera = camera;
-    // mesh->translate(1.0,1.0,1.0);
     mesh->scale(100.0,100.0,100.0);
+     mesh->translate(GLUT_SCREEN_WIDTH /2 ,GLUT_SCREEN_HEIGHT / 2, 1.0);
 
     //Glut specific functions
     glutDisplayFunc(renderer);

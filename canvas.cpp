@@ -13,6 +13,7 @@ Canvas::Canvas(int argc,char **argv){
     glutInitWindowPosition(0, 0);
     glutCreateWindow("Dharahara");
 
+
     //This function is called for window resize. Also called when first window created
     glutReshapeFunc(Canvas::reshape);
 

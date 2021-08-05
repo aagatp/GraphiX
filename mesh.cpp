@@ -67,7 +67,7 @@ void Mesh::parse(std::string filename){
         if (!line.compare(0, 2, "v "))  //starts with v<space>
         {   
 
-            std::cout << count;           
+            //std::cout << count;           
             iss >> trash; // first character is v
             maths::vec3f v;
             // followed by xyz co-ords
