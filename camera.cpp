@@ -7,19 +7,20 @@ Camera::Camera()
     m_front       = {0.0f, 0.0f, -1.0f};
     m_up           = {0.0f, 1.0f, 0.0f};
     m_right        = maths::normalize(maths::cross(m_front,m_up));
+    yaw = -90.0f;
+    pitch = 0.0f;
 }
-
 
 void Camera::processKeyboard(unsigned char key,float dt)
 {
     float m_velocity = m_speed*dt;
     switch (key) {  
 
-        case 'w':
+        case 's':
             m_pos = maths::add(m_pos,maths::mul(m_up,m_velocity));
             break;
 
-        case 's':
+        case 'w':
             m_pos = maths::sub(m_pos,maths::mul(m_up,m_velocity));
             break;
 
@@ -64,7 +65,6 @@ void Camera::processMouse(int xoffset, int yoffset)
 
     yaw   -= xoffset;
     pitch -= yoffset;
-
  
     if (pitch > 89.0f)
         pitch = 89.0f;

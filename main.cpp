@@ -40,10 +40,10 @@ void renderer(){
 
 
     maths::mat4f view = camera->getViewMatrix();
-    // maths::mat4f projection = maths::perspective(maths::radians(camera->zoom), (float)canvas->scrWidth/canvas->scrHeight);
+    maths::mat4f projection = maths::perspective(maths::radians(camera->zoom), (float)canvas->scrWidth/canvas->scrHeight);
     // maths::mat4f projection = maths::persproject(camera->m_pos);
     mesh->setView(view);
-    // mesh->setProjection(projection);
+    mesh->setProjection(projection);
     mesh->update();
     mesh->draw();
 
@@ -63,10 +63,10 @@ int main(int argc, char** argv){
     //Creating mesh
     mesh=new Mesh(canvas);
     // mesh->load("../res/cube.obj");
-    mesh->parse("../res/dharaharaFull.obj");
+    mesh->parse("../res/cubeUV.obj");
     mesh->camera = camera;
-    mesh->translate(10.0,10.0,10.0);
-    mesh->scale(100.0,100.0,100.0);
+    // mesh->translate(10.0,10.0,10.0);
+    // mesh->scale(100.0,100.0,100.0);
 
     //Glut specific functions
     glutDisplayFunc(renderer);

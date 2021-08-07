@@ -17,7 +17,7 @@ public:
     maths::vec3f m_front;
     maths::vec3f m_up;
     maths::vec3f m_right;
-    float m_speed = 200.0f;
+    float m_speed = 50.0f;
     maths::vec2i m_mousePos;
     float yaw, pitch;
 };

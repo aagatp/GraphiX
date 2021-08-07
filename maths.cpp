@@ -117,21 +117,21 @@ mat4f persproject(maths::vec3f eye){
 }
 
 mat4f perspective(float fov, float aspect){
-    float zNear = 0.1f;
-    float zFar = -30.0f;
+    float zNear = 1.0f;
+    float zFar = 500.0f;
     float zRange = zNear- zFar;
-    mat4f projection = {{
-        {1/(aspect*tan(fov/2)),0,0,0},
-        {0,1/tan(fov/2),0,0},
-        {0,0,(zFar+zNear)/zRange,(2*zFar*zNear)/zRange},
-        {0,0,-1,0}
-        }};
     // mat4f projection = {{
     //     {1/(aspect*tan(fov/2)),0,0,0},
     //     {0,1/tan(fov/2),0,0},
-    //     {0,0,(zFar+zNear)/zRange,-1},
-    //     {0,0,(2*zFar*zNear)/zRange,0}
+    //     {0,0,(zFar+zNear)/zRange,(2*zFar*zNear)/zRange},
+    //     {0,0,-1,0}
     //     }};
+    mat4f projection = {{
+        {1/(aspect*tan(fov/2)),0,0,0},
+        {0,1/tan(fov/2),0,0},
+        {0,0,(zFar+zNear)/zRange,-1},
+        {0,0,(2*zFar*zNear)/zRange,0}
+        }};
     return projection;
 }
 

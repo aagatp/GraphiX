@@ -27,7 +27,7 @@ void Canvas::reshape(int w, int h) {
     scrHeight = h;
 
     //Load essentials for window creation and resizing
-    glViewport(0, 0,  scrWidth,  scrHeight);
+    glViewport(0, 0,scrWidth ,scrWidth);
     glLoadIdentity();
     gluOrtho2D(0.0,  scrWidth, 0.0,  scrHeight);
 
@@ -54,7 +54,7 @@ void Canvas::display() {
         int y = tmp.cords[1];
         maths::vec3f col = tmp.color;
         buffers.pop_back();
-        
+        std::cout << x << "\t" << y << "\n";
         glColor4f(col[0],col[1],col[2],1);
         glVertex2i(x, y);
     }

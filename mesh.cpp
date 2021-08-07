@@ -128,7 +128,10 @@ void Mesh::draw(){
     for (auto& tri: finalTris){
         count++;
         tri.wireframe_draw();
-        tri.rasterize();
+        // tri.rasterize();
+        // maths::printvec(tri.vertices[0]);
+        // maths::printvec(tri.vertices[1]);
+        // maths::printvec(tri.vertices[2]);
     }
 }
 
@@ -177,17 +180,16 @@ void Mesh::update(){
         temptri.vertices[2] = maths::mul(view, tri.vertices[2]);
 
         //Culling
-        if (backFaceCulling(temptri)){
-            continue;
-        }
+        // if (backFaceCulling(temptri)){
+        //     continue;
+        // }
         //Shading
-        temptri.color = maths::normalize({220,220,220});
-        flatShading(temptri);
+        // temptri.color = maths::normalize({220,220,220});
+        // flatShading(temptri);
         // Projection Transformation
-        // temptri.vertices[0] = maths::mul(projection, temptri.vertices[0]);
-        // temptri.vertices[1] = maths::mul(projection, temptri.vertices[1]);
-        // temptri.vertices[2] = maths::mul(projection, temptri.vertices[2]);
-
+        temptri.vertices[0] = maths::mul(projection, temptri.vertices[0]);
+        temptri.vertices[1] = maths::mul(projection, temptri.vertices[1]);
+        temptri.vertices[2] = maths::mul(projection, temptri.vertices[2]);
 
         finalTris.push_back(temptri);
     }
@@ -198,18 +200,26 @@ bool Mesh::backFaceCulling(Triangle& tri){
     maths::vec3f v2 = tri.vertices[1];
     maths::vec3f v3 = tri.vertices[2];
 
-    maths::vec3f centroid;
-    centroid[0] = (v1[0] + v2[0] + v3[0]) / 3; 
-    centroid[1] = (v1[1] + v2[1] + v3[1]) / 3; 
-    centroid[2] = (v1[2] + v2[2] + v3[2]) / 3;
+    maths::vec3f n1 = tri.normals[0];
+    maths::vec3f n2 = tri.normals[1];
+    maths::vec3f n3 = tri.normals[2];
 
-    maths::vec3f v =maths::normalize(maths::sub(camera->m_pos,centroid));
+    // maths::vec3f centroid;
+    // centroid[0] = (v1[0] + v2[0] + v3[0]) / 3; 
+    // centroid[1] = (v1[1] + v2[1] + v3[1]) / 3; 
+    // centroid[2] = (v1[2] + v2[2] + v3[2]) / 3;
 
-    maths::vec3f normal =maths::getnormal(centroid,tri.vertices[1],tri.vertices[2]);
+    maths::vec3f view1 =maths::normalize(maths::sub(camera->m_pos,v1));
+    maths::vec3f view2 =maths::normalize(maths::sub(camera->m_pos,v2));
+    maths::vec3f view3 =maths::normalize(maths::sub(camera->m_pos,v3));
 
-    float dotProduct = maths::dot(normal,v);
+    // maths::vec3f normal =maths::getnormal(centroid,tri.vertices[1],tri.vertices[2]);
 
-    if(dotProduct <= 0){
+    float dotProduct1 = maths::dot(n1,view1);
+    float dotProduct2 = maths::dot(n2,view2);
+    float dotProduct3 = maths::dot(n3,view3);
+
+    if(dotProduct1 < 0 || dotProduct2 <0 || dotProduct3 <0){
         return false;
     }
     return true;
