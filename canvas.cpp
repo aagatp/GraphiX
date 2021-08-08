@@ -13,6 +13,7 @@ Canvas::Canvas(int argc,char **argv){
     glutInitWindowPosition(0, 0);
     glutCreateWindow("Dharahara");
 
+
     //This function is called for window resize. Also called when first window created
     glutReshapeFunc(Canvas::reshape);
 
@@ -44,7 +45,6 @@ void Canvas::update(int val) {
 }
 
 void Canvas::display() {
-    glClear( GL_COLOR_BUFFER_BIT);
     
     //this function draws into the screen the pixel buffer stored
     glBegin(GL_POINTS);

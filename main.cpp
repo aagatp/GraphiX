@@ -24,8 +24,8 @@ void processMouseMotion(int xpos, int ypos) {
     int yoffset = lastY - ypos; 
     // reversed since y-coordinates go from bottom to top
 
-    lastX = xpos;
-    lastY = ypos;
+        lastX = xpos;
+        lastY = ypos;
 
     camera->processMouse(xoffset, yoffset);
  }

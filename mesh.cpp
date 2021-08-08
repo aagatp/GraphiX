@@ -199,7 +199,7 @@ void Mesh::render(){
 
     for (auto& tri:finalTris){
         tri.wireframe_draw();
-        // tri.rasterize();
+        tri.rasterize();
     }
 }
 
