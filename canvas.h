@@ -6,7 +6,7 @@
 #include <vector>
 
 struct Buffer{
-    maths::vec2i cords;
+    maths::vec2f cords;
     maths::vec3f color;
 };
 
@@ -16,8 +16,8 @@ public:
     static void reshape(int,int);
     void display();
     static void update(int fps=30);
-    void putpixel(int x, int y,float zBuf, const maths::vec3f col);
-    void drawline(int x1, int y1, int x2, int y2, const maths::vec3f color);
+    void putpixel(float x, float y,float zBuf, const maths::vec3f col);
+    void drawline(float x1, float y1, float x2, float y2, const maths::vec3f color);
     static int scrHeight, scrWidth;
     std::vector<Buffer> buffers;
 };

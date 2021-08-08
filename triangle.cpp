@@ -287,7 +287,7 @@ void Triangle::fillBottomFlatTriangle(maths::vec3f v1, maths::vec3f v2, maths::v
     for (int scanlineY = v1[1]; scanlineY < v2[1] - 0.5f; scanlineY++)
     {
         
-        m_canvas->drawline(static_cast<int>(curx1), scanlineY, static_cast<int>(curx2), scanlineY, color);
+        m_canvas->drawline(curx1,(float)scanlineY,curx2,(float)scanlineY, color);
         curx1 += invslope1;
         curx2 += invslope2;
     }
@@ -303,7 +303,7 @@ void Triangle::fillTopFlatTriangle(maths::vec3f v1, maths::vec3f v2, maths::vec3
 
     for (int scanlineY = v3[1]; scanlineY > v1[1]; scanlineY--)
     {
-        m_canvas->drawline(static_cast<int>(curx1), scanlineY,static_cast<int>(curx2), scanlineY, color);
+        m_canvas->drawline(curx1,(float)scanlineY,curx2,(float)scanlineY, color);
         curx1 -= invslope1;
         curx2 -= invslope2;
     }
@@ -311,8 +311,8 @@ void Triangle::fillTopFlatTriangle(maths::vec3f v1, maths::vec3f v2, maths::vec3
 
 void Triangle::wireframe_draw(){
     
-    m_canvas->drawline((int)vertices[0][0], (int)vertices[0][1], (int)vertices[1][0], (int)vertices[1][1],color);
-	m_canvas->drawline((int)vertices[1][0], (int)vertices[1][1], (int)vertices[2][0], (int)vertices[2][1],color);
-	m_canvas->drawline((int)vertices[2][0], (int)vertices[2][1], (int)vertices[0][0], (int)vertices[0][1],color);
+    m_canvas->drawline(vertices[0][0],vertices[0][1],vertices[1][0],vertices[1][1],color);
+	m_canvas->drawline(vertices[1][0],vertices[1][1],vertices[2][0],vertices[2][1],color);
+	m_canvas->drawline(vertices[2][0],vertices[2][1],vertices[0][0],vertices[0][1],color);
 }
 

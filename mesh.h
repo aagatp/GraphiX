@@ -13,7 +13,6 @@ public:
     Mesh(Canvas*);
     void load(std::string);
     void parse(std::string);
-    void draw();
     void rotate(float,float,float);
     void translate(float,float,float);
     void scale(float, float, float);
@@ -24,7 +23,7 @@ public:
     void gouraudShading(Triangle& tri);
     void phongShading(Triangle& tri);
     
-    void update();
+    void render();
     void setView(maths::mat4f);
     void setProjection(maths::mat4f);
 

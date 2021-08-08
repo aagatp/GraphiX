@@ -58,9 +58,17 @@ namespace maths{
 
     void printvec(vec3f);
 
+    void printmat(mat4f);
+
     float max(float,float);
 
     std::vector<float> interpolate(float, float, float, float);
 
     vec3f getnormal(vec3f, vec3f, vec3f);
+
+    mat4f matinverse(mat4f);
+
+    mat4f transpose(mat4f);
+
+    mat4f matidentity();
 }

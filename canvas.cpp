@@ -27,7 +27,7 @@ void Canvas::reshape(int w, int h) {
     scrHeight = h;
 
     //Load essentials for window creation and resizing
-    glViewport(0, 0,scrWidth ,scrWidth);
+    // glViewport(0, 0,scrWidth ,scrWidth);
     glLoadIdentity();
     gluOrtho2D(0.0,  scrWidth, 0.0,  scrHeight);
 
@@ -44,19 +44,19 @@ void Canvas::update(int val) {
 }
 
 void Canvas::display() {
+    glClear( GL_COLOR_BUFFER_BIT);
     
     //this function draws into the screen the pixel buffer stored
     glBegin(GL_POINTS);
 
     while (!buffers.empty()){
         Buffer tmp = buffers.back();
-        int x = tmp.cords[0];
-        int y = tmp.cords[1];
+        float x = tmp.cords[0];
+        float y = tmp.cords[1];
         maths::vec3f col = tmp.color;
         buffers.pop_back();
-        std::cout << x << "\t" << y << "\n";
         glColor4f(col[0],col[1],col[2],1);
-        glVertex2i(x, y);
+        glVertex2f(x,y);
     }
     glEnd();
     glutSwapBuffers();
@@ -64,25 +64,26 @@ void Canvas::display() {
 }
 
 
-void Canvas::putpixel(int x, int y,float zBuf, const maths::vec3f col) {
+void Canvas::putpixel(float x, float y,float zBuf, const maths::vec3f col) {
     
     //Stores the pixels in buffers to draw later in display func
     Buffer tmp;
+    // tmp.cords = {(x+1)*(float)0.5*(scrWidth),(y+1)*(float)0.5*(scrHeight)};
     tmp.cords = {x,y};
     tmp.color = col;
     buffers.push_back(tmp);
 }
 
-void Canvas::drawline(int x1, int y1, int x2, int y2, const maths::vec3f color)
+void Canvas::drawline(float x1, float y1, float x2, float y2, const maths::vec3f color)
 {
     // Bresenham line drawing algorithm
     
-    int dx, dy;
-    int steps, k;
+    float dx, dy;
+    float steps, k;
     dx = abs(x2 - x1);
     dy = abs(y2 - y1);
 
-    int lx, ly;
+    float lx, ly;
 
     if (x2 > x1) { lx = 1; }
     else { lx = -1; }
@@ -90,11 +91,11 @@ void Canvas::drawline(int x1, int y1, int x2, int y2, const maths::vec3f color)
     if (y2 > y1) { ly = 1; }
     else { ly = -1; }
 
-    int x = x1, y = y1;
+    float x = x1, y = y1;
     
     //slope is less than 1
     if (dx > dy) {
-        int p = 2 * dy - dx;
+        float p = 2 * dy - dx;
         for (int k = 0; k <= dx; k++) {
             putpixel(x, y,1, color);
             if (p < 0) {
@@ -110,7 +111,7 @@ void Canvas::drawline(int x1, int y1, int x2, int y2, const maths::vec3f color)
     }
     // slope is greater than equal to 1
     else {
-        int p = 2 * dx - dy;
+        float p = 2 * dx - dy;
         for (int k = 0; k <= dy; k++) {
             putpixel(x, y,1, color);
             if (p < 0) {

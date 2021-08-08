@@ -2,6 +2,8 @@
 
 Mesh::Mesh(Canvas* mcanvas){
     canvas = mcanvas;
+    projection = maths::matidentity();
+    view = maths::matidentity();
 }
 
 void Mesh::load(std::string filename){
@@ -123,17 +125,6 @@ void Mesh::parse(std::string filename){
     finalTris = triangles;
 }
 
-void Mesh::draw(){
-    int count =0;
-    for (auto& tri: finalTris){
-        count++;
-        tri.wireframe_draw();
-        // tri.rasterize();
-        // maths::printvec(tri.vertices[0]);
-        // maths::printvec(tri.vertices[1]);
-        // maths::printvec(tri.vertices[2]);
-    }
-}
 
 void Mesh::translate(float tx, float ty, float tz){
     for (auto& tri: triangles){
@@ -166,7 +157,7 @@ void Mesh::setProjection(maths::mat4f proj){
 void Mesh::setView(maths::mat4f vi){
     view= vi;
 }
-void Mesh::update(){
+void Mesh::render(){
     
     finalTris.clear();
     int cullCount = 0;
@@ -174,24 +165,41 @@ void Mesh::update(){
     for (auto& tri:triangles){
         Triangle temptri = tri;
 
-        //View Transform
-        temptri.vertices[0] = maths::mul(view, tri.vertices[0]);
-        temptri.vertices[1] = maths::mul(view, tri.vertices[1]);
-        temptri.vertices[2] = maths::mul(view, tri.vertices[2]);
+        // Culling
+        if (backFaceCulling(temptri)){
+            continue;
+        }
 
-        //Culling
-        // if (backFaceCulling(temptri)){
-        //     continue;
-        // }
         //Shading
-        // temptri.color = maths::normalize({220,220,220});
-        // flatShading(temptri);
-        // Projection Transformation
+        temptri.color = maths::normalize({220,220,220});
+        flatShading(temptri);
+
+        //View Transform
+        temptri.vertices[0] = maths::mul(view, temptri.vertices[0]);
+        temptri.vertices[1] = maths::mul(view, temptri.vertices[1]);
+        temptri.vertices[2] = maths::mul(view, temptri.vertices[2]);
+
+
+        // Projection Transformation and Normalization
         temptri.vertices[0] = maths::mul(projection, temptri.vertices[0]);
         temptri.vertices[1] = maths::mul(projection, temptri.vertices[1]);
         temptri.vertices[2] = maths::mul(projection, temptri.vertices[2]);
+        
+        // Viewport Transformation
+        temptri.vertices[0] = maths::mul(maths::translate(1.0,1.0,0.0),temptri.vertices[0]);
+        temptri.vertices[1] = maths::mul(maths::translate(1.0,1.0,0.0),temptri.vertices[1]);
+        temptri.vertices[2] = maths::mul(maths::translate(1.0,1.0,0.0),temptri.vertices[2]);
+        //.continued
+        temptri.vertices[0] = maths::mul(maths::scale(0.5*canvas->scrWidth,0.5*canvas->scrHeight,1.0),temptri.vertices[0]);
+        temptri.vertices[1] = maths::mul(maths::scale(0.5*canvas->scrWidth,0.5*canvas->scrHeight,1.0),temptri.vertices[1]);
+        temptri.vertices[2] = maths::mul(maths::scale(0.5*canvas->scrWidth,0.5*canvas->scrHeight,1.0),temptri.vertices[2]);
 
         finalTris.push_back(temptri);
+    }
+
+    for (auto& tri:finalTris){
+        tri.wireframe_draw();
+        // tri.rasterize();
     }
 }
 
@@ -209,9 +217,9 @@ bool Mesh::backFaceCulling(Triangle& tri){
     // centroid[1] = (v1[1] + v2[1] + v3[1]) / 3; 
     // centroid[2] = (v1[2] + v2[2] + v3[2]) / 3;
 
-    maths::vec3f view1 =maths::normalize(maths::sub(camera->m_pos,v1));
-    maths::vec3f view2 =maths::normalize(maths::sub(camera->m_pos,v2));
-    maths::vec3f view3 =maths::normalize(maths::sub(camera->m_pos,v3));
+    maths::vec3f view1 =maths::normalize(maths::sub(maths::normalize(camera->m_pos),v1));
+    maths::vec3f view2 =maths::normalize(maths::sub(maths::normalize(camera->m_pos),v2));
+    maths::vec3f view3 =maths::normalize(maths::sub(maths::normalize(camera->m_pos),v3));
 
     // maths::vec3f normal =maths::getnormal(centroid,tri.vertices[1],tri.vertices[2]);
 
