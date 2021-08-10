@@ -19,6 +19,6 @@ public:
     maths::vec3f m_right;
     float m_speed;
     maths::vec2i m_mousePos;
-    float yaw, pitch;
+    float yaw, pitch, roll;
 };
 

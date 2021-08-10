@@ -137,9 +137,9 @@ void Mesh::translate(float tx, float ty, float tz){
 
 void Mesh::rotate(float yaw, float pitch=0, float roll=0){
     for (auto& tri: triangles){
-        tri.vertices[0] = maths::mul(maths::rotate(yaw,pitch,roll), tri.vertices[0]);
-        tri.vertices[1] = maths::mul(maths::rotate(yaw,pitch,roll), tri.vertices[1]);
-        tri.vertices[2] = maths::mul(maths::rotate(yaw,pitch,roll), tri.vertices[2]);
+        // tri.vertices[0] = maths::mul(maths::rotate(yaw,pitch,roll), tri.vertices[0]);
+        // tri.vertices[1] = maths::mul(maths::rotate(yaw,pitch,roll), tri.vertices[1]);
+        // tri.vertices[2] = maths::mul(maths::rotate(yaw,pitch,roll), tri.vertices[2]);
     }
 }
 
@@ -198,7 +198,7 @@ void Mesh::render(){
     }
 
     for (auto& tri:finalTris){
-        tri.wireframe_draw();
+        // tri.wireframe_draw();
         tri.rasterize();
     }
 }
@@ -217,9 +217,9 @@ bool Mesh::backFaceCulling(Triangle& tri){
     // centroid[1] = (v1[1] + v2[1] + v3[1]) / 3; 
     // centroid[2] = (v1[2] + v2[2] + v3[2]) / 3;
 
-    maths::vec3f view1 =maths::normalize(maths::sub(maths::normalize(camera->m_pos),v1));
-    maths::vec3f view2 =maths::normalize(maths::sub(maths::normalize(camera->m_pos),v2));
-    maths::vec3f view3 =maths::normalize(maths::sub(maths::normalize(camera->m_pos),v3));
+    maths::vec3f view1 =maths::normalize(maths::sub(camera->m_pos,v1));
+    maths::vec3f view2 =maths::normalize(maths::sub(camera->m_pos,v2));
+    maths::vec3f view3 =maths::normalize(maths::sub(camera->m_pos,v3));
 
     // maths::vec3f normal =maths::getnormal(centroid,tri.vertices[1],tri.vertices[2]);
 

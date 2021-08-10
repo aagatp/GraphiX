@@ -11,8 +11,7 @@ int lastY = 500;
 Canvas* canvas;
 Camera* camera;
 Mesh* mesh;
-
-float deltaTime = 0;
+float deltaTime;
 
 
 void processKeys(unsigned char key, int x, int y){
@@ -20,14 +19,14 @@ void processKeys(unsigned char key, int x, int y){
 }
 
 void processMouseMotion(int xpos, int ypos) {
-    int xoffset = xpos - lastX;
-    int yoffset = lastY - ypos; 
-    // reversed since y-coordinates go from bottom to top
+    // int xoffset = lastX- xpos;
+    // int yoffset = lastY - ypos; 
+    // // reversed since y-coordinates go from bottom to top
 
-        lastX = xpos;
-        lastY = ypos;
+    //     lastX = xpos;
+    //     lastY = ypos;
 
-    camera->processMouse(xoffset, yoffset);
+    camera->processMouse(xpos, ypos);
  }
 
 void renderer(){
@@ -37,7 +36,6 @@ void renderer(){
     float currentFrame = glutGet(GLUT_ELAPSED_TIME);
     deltaTime = (currentFrame - lastFrame)/1000;
     lastFrame = currentFrame;
-
 
     maths::mat4f view = camera->getViewMatrix();
     maths::mat4f projection = maths::perspective(maths::radians(camera->zoom), (float)canvas->scrWidth/canvas->scrHeight);
@@ -62,13 +60,11 @@ int main(int argc, char** argv){
 
     //Creating mesh
     mesh=new Mesh(canvas);
-    // mesh->load("../res/cube.obj");
     mesh->parse("../res/dharahara.obj");
     mesh->camera = camera;
-    // mesh->translate(0.0,0.0,3.0);
-    // mesh->scale(100.0,100.0,100.0);
 
     //Glut specific functions
+    glutReshapeFunc(canvas->reshape);
     glutDisplayFunc(renderer);
     glutKeyboardFunc(processKeys);
     glutMotionFunc(processMouseMotion);

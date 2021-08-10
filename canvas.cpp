@@ -12,10 +12,8 @@ Canvas::Canvas(int argc,char **argv){
     glutInitWindowSize(scrWidth,scrHeight);
     glutInitWindowPosition(0, 0);
     glutCreateWindow("Dharahara");
-
-
-    //This function is called for window resize. Also called when first window created
-    glutReshapeFunc(Canvas::reshape);
+    // //This function is called for window resize. Also called when first window created
+    // glutReshapeFunc(Canvas::reshape);
 
 }
 
@@ -28,7 +26,6 @@ void Canvas::reshape(int w, int h) {
     scrHeight = h;
 
     //Load essentials for window creation and resizing
-    // glViewport(0, 0,scrWidth ,scrWidth);
     glLoadIdentity();
     gluOrtho2D(0.0,  scrWidth, 0.0,  scrHeight);
 
@@ -39,7 +36,6 @@ void Canvas::update(int val) {
     int maxfps = 60;
 
     glClear( GL_COLOR_BUFFER_BIT);
-    // glClearColor(0,0,0,1);
     glutPostRedisplay();
     glutTimerFunc(1000 /maxfps, update, 0);
 }

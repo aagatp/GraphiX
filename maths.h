@@ -6,6 +6,7 @@
 #include <iostream>
 
 namespace maths{
+
     using vec2i = std::array<int,2>;
     using vec2f = std::array<float,2>;
 
@@ -18,7 +19,7 @@ namespace maths{
     using mat4f = std::array<std::array<float,4>,4>;
     using mat4i = std::array<std::array<int,4>,4>;
 
-    float radians(float degree);
+    float radians(float);
 
     float degrees(float);
 
@@ -48,7 +49,11 @@ namespace maths{
 
     mat4f persproject(maths::vec3f pos);
 
-    mat4f rotate(float yaw, float, float);
+    mat4f x_rotation(float);
+
+    mat4f y_rotation(float);
+
+    mat4f z_rotation(float);
 
     mat4f lookAt(vec3f eye, vec3f target, vec3f vUp);
 

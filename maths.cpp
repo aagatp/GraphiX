@@ -130,7 +130,7 @@ namespace maths{
             {1/(aspect*tan(fov/2)),0,0,0},
             {0,1/tan(fov/2),0,0},
             {0,0,(zFar+zNear)/zRange,(zFar*zNear)/zRange},
-            {0,0,-1,0}
+            {0,0,1,0}
             }};
         // mat4f projection = {{
         //     {aspect/tan(fov/2),0,0,0},
@@ -142,37 +142,35 @@ namespace maths{
     }
 
 
-    mat4f rotate(float yaw, float pitch=0, float roll=0){
-        // std::cout << "Hello";
-        mat4f rotation = {{
-            {cos(yaw)*cos(pitch),cos(yaw)*sin(pitch)*sin(roll)-sin(yaw)*cos(roll),cos(yaw)*sin(pitch)*cos(roll)+sin(yaw)*sin(roll),0},
-            {sin(yaw)*cos(pitch),sin(yaw)*sin(pitch)*sin(roll)+cos(yaw)*cos(roll),sin(yaw)*sin(pitch)*cos(roll)-cos(yaw)*sin(roll),0},
-            {-sin(pitch),cos(pitch)*sin(roll),cos(pitch)*cos(roll),0},
-            {0,0,0,1}}};
-        return rotation;
+    mat4f x_rotation(float pitch){
+        mat4f xrotation = {{
+            {1, 0,           0,             0},
+            {0, cos(pitch), -sin(pitch),    0},
+            {0, sin(pitch),  cos(pitch),    0},
+            {0, 0,           0,             1}
+        }};
+        return xrotation;
     }
 
-    mat4f roty(float yaw){
+    mat4f y_rotation(float yaw){
         mat4f yrotation = {{
-            {cos(yaw),0,sin(yaw),0},
-            {0,       1,0,      0},
-            {-sin(yaw),0, cos(yaw), 0},
-            {0, 0, 0, 1}
+            {cos(yaw),  0,  sin(yaw),   0},
+            {0,         1,  0,          0},
+            {-sin(yaw), 0,  cos(yaw),   0},
+            {0,         0,  0,          1}
         }};
         return yrotation;
     }
 
-
-    mat4f rotz(float pitch){
+    mat4f z_rotation(float roll){
         mat4f zrotation = {{
-            {cos(pitch), -sin(pitch), 0,        0},
-            {sin(pitch), cos(pitch),  0,        0},
-            {0,          0,           1,      0},
-            {0, 0, 0, 1}
+            {cos(roll), 0,  -sin(roll), 0},
+            {sin(roll), 0,  cos(roll),  0},
+            {0,         1,  0,          0},
+            {0,         0,  0,          1}
         }};
         return zrotation;
     }
-
 
     mat4f lookAt(vec3f eye, vec3f target, vec3f vUp={0,1,0})
     {
