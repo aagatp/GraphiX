@@ -12,7 +12,16 @@ float deltaTime;
 
 
 void processKeys(unsigned char key, int x, int y){
-    camera->processKeyboard(key,deltaTime);
+    if (key=='j')
+        mesh->xrotate(0.05);
+    else if (key=='k')
+        mesh->xrotate(-0.05);
+    else if (key=='h')
+        mesh->yrotate(0.05);
+    else if (key=='l')
+        mesh->yrotate(-0.05);
+    else
+        camera->processKeyboard(key,deltaTime);
 }
 
 void processMouseMotion(int xpos, int ypos) {
@@ -23,24 +32,6 @@ void processMouseClick(int button,int state, int xpos, int ypos){
     camera->processClicks(button,state,xpos,ypos);
 }
 
-void processRotation(int key, int x, int y){
-    if (GLUT_KEY_LEFT){
-        std::cout << "left";
-        mesh->xrotate(0.05);
-    }
-    if (GLUT_KEY_RIGHT){
-        std::cout << "right";
-        mesh->xrotate(-0.05);
-    }
-    if (GLUT_KEY_UP){
-        std::cout << "up";
-        mesh->yrotate(0.05);
-    }
-    if (GLUT_KEY_DOWN){
-        std::cout << "down";
-        mesh->yrotate(-0.05);
-    }
-}
 void renderer(){
 
     //Calculate deltatime and framePerSecond
@@ -78,7 +69,6 @@ int main(int argc, char** argv){
     glutReshapeFunc(canvas->reshape);
     glutDisplayFunc(renderer);
     glutKeyboardFunc(processKeys);
-    glutSpecialFunc(processRotation);
     glutMotionFunc(processMouseMotion);
     glutMouseFunc(processMouseClick);
     glutMainLoop();
