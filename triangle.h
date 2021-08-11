@@ -3,6 +3,14 @@
 #include "canvas.h"
 #include <vector>
 
+struct Vertex{
+    maths::vec3f normal;
+    maths::vec3f position;
+    maths::vec2f texCoords;
+    maths::vec3f color;
+    float intensity;
+};
+
 class Triangle{
 public:
     Triangle(Canvas*);
@@ -13,20 +21,20 @@ public:
     void setNormals(maths::vec3f na, maths::vec3f nb, maths::vec3f nc);
     void setTexCoords(maths::vec2f, maths::vec2f, maths::vec2f);
     void flatRasterize();
-    void gouraudRasterize1();
-    void gouraudRasterize2();
-
+    void gouraudRasterize();
+    void populateVertices();
     void rasterize();
     void wireframe_draw();
     std::array <maths::vec3f,3> vertices;
     std::array <maths::vec3f,3> normals;
     std::array <maths::vec2f,3> texCoords;
+    maths::vec3f intensities;
     maths::vec3f color;
     bool isGouraudShading;
     void setIntensity(maths::vec3f);
 private:
     void fillBottomFlatTriangle(maths::vec3f v1, maths::vec3f v2, maths::vec3f v3);
     void fillTopFlatTriangle(maths::vec3f v1, maths::vec3f v2, maths::vec3f v3);
-    std::array<maths::vec4f,3> vertex_intensity;
     Canvas* m_canvas;
+    std::array<Vertex,3> vertex;
 };

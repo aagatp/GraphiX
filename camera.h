@@ -9,6 +9,7 @@ public:
     Camera();
     void processKeyboard(unsigned char key, float);
     void processMouse(int x, int y);
+    void processClicks(int,int, int, int);
     maths::mat4f getViewMatrix();
 
     float zoom;
@@ -20,5 +21,7 @@ public:
     float m_speed;
     maths::vec2i m_mousePos;
     float yaw, pitch, roll;
+    int lastX;
+    int lastY;
 };
 

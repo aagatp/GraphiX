@@ -16,6 +16,15 @@ namespace maths{
     using vec4f = std::array<float,4>;
     using vec4i = std::array<int,4>;
 
+    using vec5f = std::array<float,5>;
+    using vec5i = std::array<int,5>;
+
+    using vec6f = std::array<float,6>;
+    using vec6i = std::array<int,6>;
+
+    using vec7f = std::array<float,7>;
+    using vec7i = std::array<int,7>;
+
     using mat4f = std::array<std::array<float,4>,4>;
     using mat4i = std::array<std::array<int,4>,4>;
 
@@ -55,7 +64,9 @@ namespace maths{
 
     mat4f z_rotation(float);
 
-    mat4f lookAt(vec3f eye, vec3f target, vec3f vUp);
+    mat4f rotate(float, float, float, float);
+
+    mat4f lookAt(vec3f eye, vec3f target, vec3f vUp={0,1,0});
 
     mat4f translate(float tx, float ty, float tz);
     

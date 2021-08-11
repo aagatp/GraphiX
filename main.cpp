@@ -4,8 +4,6 @@
 #include <chrono>
 #include "mesh.h"
 
-int lastX = 800;
-int lastY = 500;
 
 //Global Setup
 Canvas* canvas;
@@ -19,15 +17,12 @@ void processKeys(unsigned char key, int x, int y){
 }
 
 void processMouseMotion(int xpos, int ypos) {
-    // int xoffset = lastX- xpos;
-    // int yoffset = lastY - ypos; 
-    // // reversed since y-coordinates go from bottom to top
-
-    //     lastX = xpos;
-    //     lastY = ypos;
-
     camera->processMouse(xpos, ypos);
- }
+}
+
+void processMouseClick(int button,int state, int xpos, int ypos){
+    camera->processClicks(button,state,xpos,ypos);
+}
 
 void renderer(){
 
@@ -39,7 +34,6 @@ void renderer(){
 
     maths::mat4f view = camera->getViewMatrix();
     maths::mat4f projection = maths::perspective(maths::radians(camera->zoom), (float)canvas->scrWidth/canvas->scrHeight);
-    // maths::mat4f projection = maths::persproject(camera->m_pos);
 
     mesh->setView(view);
     mesh->setProjection(projection);
@@ -60,7 +54,7 @@ int main(int argc, char** argv){
 
     //Creating mesh
     mesh=new Mesh(canvas);
-    mesh->parse("../res/dharahara.obj");
+    mesh->parse("../res/dharaharascene.obj");
     mesh->camera = camera;
 
     //Glut specific functions
@@ -68,6 +62,7 @@ int main(int argc, char** argv){
     glutDisplayFunc(renderer);
     glutKeyboardFunc(processKeys);
     glutMotionFunc(processMouseMotion);
+    glutMouseFunc(processMouseClick);
     glutMainLoop();
 
 }

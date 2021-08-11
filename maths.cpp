@@ -120,24 +120,12 @@ namespace maths{
         float zNear = 0.1f;
         float zFar = 1000.0f;
         float zRange = zNear- zFar;
-        // mat4f projection ={{
-        //     {1/(aspect*tan(fov/2)),0,0,0},
-        //     {0,1/tan(fov/2),0,0},
-        //     {0,0,-zFar/zRange,(zFar*zNear)/zRange},
-        //     {0,0,1.0,0}
-        //     }};
         mat4f projection = {{
             {1/(aspect*tan(fov/2)),0,0,0},
             {0,1/tan(fov/2),0,0},
             {0,0,(zFar+zNear)/zRange,(zFar*zNear)/zRange},
-            {0,0,1,0}
+            {0,0,-1,0}
             }};
-        // mat4f projection = {{
-        //     {aspect/tan(fov/2),0,0,0},
-        //     {0,1/tan(fov/2),0,0},
-        //     {0,0,(zFar+zNear)/zRange,-1},
-        //     {0,0,(2*zFar*zNear)/zRange,0}
-        //     }};
         return projection;
     }
 
@@ -164,19 +152,44 @@ namespace maths{
 
     mat4f z_rotation(float roll){
         mat4f zrotation = {{
-            {cos(roll), 0,  -sin(roll), 0},
-            {sin(roll), 0,  cos(roll),  0},
-            {0,         1,  0,          0},
-            {0,         0,  0,          1}
+            {cos(roll), -sin(roll), 0, 0},
+            {sin(roll), cos(roll),  0, 0},
+            {0,         1,          0, 0},
+            {0,         0,          0, 1}
         }};
         return zrotation;
     }
 
-    mat4f lookAt(vec3f eye, vec3f target, vec3f vUp={0,1,0})
+    mat4f rotate(float angle, float x, float y, float z){
+        vec3f axis = normalize({x,y,z});
+        mat4f rotation = matidentity();
+        // angle = radians(angle);
+
+        float c = cosf(angle);
+        float s = sinf(angle);
+        float mag = sqrtf(x*x+y*y+z*z);
+
+        vec3f tmp = mul(axis,1-c);
+        rotation[0][0] = c+tmp[0]*axis[0];
+        rotation[0][1] = 0+tmp[0]*axis[1]+s*axis[2];
+        rotation[0][2] = 0+tmp[0]*axis[0]-s*axis[1];
+
+        rotation[1][0] = 0+tmp[1]*axis[0]- s*axis[2];
+        rotation[1][1] = c+tmp[1]*axis[1];
+        rotation[1][2] = 0+tmp[1]*axis[2]-s*axis[0];
+
+        rotation[2][0] = 0+tmp[2]*axis[0]+s*axis[1];
+        rotation[2][1] = 0+tmp[2]*axis[1]-s*axis[0];
+        rotation[2][2] = c+tmp[2]*axis[2];
+        
+        return rotation;
+    }
+
+    mat4f lookAt(vec3f eye, vec3f target, vec3f v_up)
     {
         vec3f forward = maths::normalize(maths::sub(eye,target));
-        vec3f right = maths::normalize(maths::cross(vUp,forward));
-        vec3f up = maths::cross(forward,right);
+        vec3f right = maths::normalize(maths::cross(v_up,forward));
+        vec3f up = maths::normalize(maths::cross(forward,right));
 
         mat4f view ={{
                     {right[0],right[1],right[2],-maths::dot(right,eye)},
@@ -184,13 +197,6 @@ namespace maths{
                     {forward[0],forward[1],forward[2],-maths::dot(forward,eye)},
                     {0,0,0,1}
                 }};
-        
-        // mat4f view ={{
-        //             {right[0],right[1],right[2],0},
-        //             {up[0],up[1],up[2],0},
-        //             {forward[0],forward[1],forward[2],0},
-        //             {maths::dot(right,eye),maths::dot(up,eye),maths::dot(forward,eye),1}
-        //         }};
 
         return view;
 

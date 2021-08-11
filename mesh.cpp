@@ -160,7 +160,6 @@ void Mesh::setView(maths::mat4f vi){
 void Mesh::render(){
     
     finalTris.clear();
-    int cullCount = 0;
 
     for (auto& tri:triangles){
         Triangle temptri = tri;
@@ -185,6 +184,7 @@ void Mesh::render(){
         temptri.vertices[1] = maths::mul(projection, temptri.vertices[1]);
         temptri.vertices[2] = maths::mul(projection, temptri.vertices[2]);
         
+
         // Viewport Transformation
         temptri.vertices[0] = maths::mul(maths::translate(1.0,1.0,0.0),temptri.vertices[0]);
         temptri.vertices[1] = maths::mul(maths::translate(1.0,1.0,0.0),temptri.vertices[1]);
@@ -198,7 +198,7 @@ void Mesh::render(){
     }
 
     for (auto& tri:finalTris){
-        // tri.wireframe_draw();
+        tri.wireframe_draw();
         tri.rasterize();
     }
 }
@@ -212,16 +212,9 @@ bool Mesh::backFaceCulling(Triangle& tri){
     maths::vec3f n2 = tri.normals[1];
     maths::vec3f n3 = tri.normals[2];
 
-    // maths::vec3f centroid;
-    // centroid[0] = (v1[0] + v2[0] + v3[0]) / 3; 
-    // centroid[1] = (v1[1] + v2[1] + v3[1]) / 3; 
-    // centroid[2] = (v1[2] + v2[2] + v3[2]) / 3;
-
     maths::vec3f view1 =maths::normalize(maths::sub(camera->m_pos,v1));
     maths::vec3f view2 =maths::normalize(maths::sub(camera->m_pos,v2));
     maths::vec3f view3 =maths::normalize(maths::sub(camera->m_pos,v3));
-
-    // maths::vec3f normal =maths::getnormal(centroid,tri.vertices[1],tri.vertices[2]);
 
     float dotProduct1 = maths::dot(n1,view1);
     float dotProduct2 = maths::dot(n2,view2);
