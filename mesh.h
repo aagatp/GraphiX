@@ -13,7 +13,9 @@ public:
     Mesh(Canvas*);
     void load(std::string);
     void parse(std::string);
-    void rotate(float,float,float);
+    void xrotate(float);
+    void yrotate(float);
+    void zrotate(float);
     void translate(float,float,float);
     void scale(float, float, float);
     void applyTransform(maths::mat4f&);

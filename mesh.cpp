@@ -135,11 +135,25 @@ void Mesh::translate(float tx, float ty, float tz){
     }
 }
 
-void Mesh::rotate(float yaw, float pitch=0, float roll=0){
+void Mesh::xrotate(float angle){
     for (auto& tri: triangles){
-        // tri.vertices[0] = maths::mul(maths::rotate(yaw,pitch,roll), tri.vertices[0]);
-        // tri.vertices[1] = maths::mul(maths::rotate(yaw,pitch,roll), tri.vertices[1]);
-        // tri.vertices[2] = maths::mul(maths::rotate(yaw,pitch,roll), tri.vertices[2]);
+        tri.vertices[0] = maths::mul(maths::x_rotation(angle), tri.vertices[0]);
+        tri.vertices[1] = maths::mul(maths::x_rotation(angle), tri.vertices[1]);
+        tri.vertices[2] = maths::mul(maths::x_rotation(angle), tri.vertices[2]);
+    }
+}
+void Mesh::yrotate(float angle){
+    for (auto& tri: triangles){
+        tri.vertices[0] = maths::mul(maths::y_rotation(angle), tri.vertices[0]);
+        tri.vertices[1] = maths::mul(maths::y_rotation(angle), tri.vertices[1]);
+        tri.vertices[2] = maths::mul(maths::y_rotation(angle), tri.vertices[2]);
+    }
+}
+void Mesh::zrotate(float angle){
+    for (auto& tri: triangles){
+        tri.vertices[0] = maths::mul(maths::z_rotation(angle), tri.vertices[0]);
+        tri.vertices[1] = maths::mul(maths::z_rotation(angle), tri.vertices[1]);
+        tri.vertices[2] = maths::mul(maths::z_rotation(angle), tri.vertices[2]);
     }
 }
 
@@ -198,7 +212,7 @@ void Mesh::render(){
     }
 
     for (auto& tri:finalTris){
-        tri.wireframe_draw();
+        // tri.wireframe_draw();
         tri.rasterize();
     }
 }
@@ -229,7 +243,7 @@ bool Mesh::backFaceCulling(Triangle& tri){
 float Mesh::calculateIntensity(maths::vec3f point, maths::vec3f normal, maths::vec3f view){
 
     float i = 0.0;
-    maths::vec3f position = {500,600,200};
+    maths::vec3f position = {30,30,30};
     maths::vec3f l_dir = maths::normalize(maths::sub(position,point));
     float ambientInt = 0.9;
     float pointInt = 0.5;

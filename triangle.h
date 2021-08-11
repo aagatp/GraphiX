@@ -2,14 +2,7 @@
 #include "maths.h"
 #include "canvas.h"
 #include <vector>
-
-struct Vertex{
-    maths::vec3f normal;
-    maths::vec3f position;
-    maths::vec2f texCoords;
-    maths::vec3f color;
-    float intensity;
-};
+#include "vertex.h"
 
 class Triangle{
 public:
@@ -32,9 +25,10 @@ public:
     maths::vec3f color;
     bool isGouraudShading;
     void setIntensity(maths::vec3f);
-private:
-    void fillBottomFlatTriangle(maths::vec3f v1, maths::vec3f v2, maths::vec3f v3);
-    void fillTopFlatTriangle(maths::vec3f v1, maths::vec3f v2, maths::vec3f v3);
+    void drawFlatTriangle(const Vertex &,const Vertex &,const Vertex &,const Vertex &,const Vertex &,Vertex);
     Canvas* m_canvas;
+private:
+    void fillBottomFlatTriangle(maths::vec3f v1,maths::vec3f v2, maths::vec3f v3);
+    void fillTopFlatTriangle(maths::vec3f v1,maths::vec3f v2, maths::vec3f v3);
     std::array<Vertex,3> vertex;
 };
