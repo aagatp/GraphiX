@@ -17,6 +17,8 @@ public:
     void gouraudRasterize();
     void populateVertices();
     void rasterize();
+    void baryRasterize();
+    void shadeLine(float,float,float);
     void wireframe_draw();
     std::array <maths::vec3f,3> vertices;
     std::array <maths::vec3f,3> normals;
@@ -25,10 +27,10 @@ public:
     maths::vec3f color;
     bool isGouraudShading;
     void setIntensity(maths::vec3f);
-    void drawFlatTriangle(const Vertex &,const Vertex &,const Vertex &,const Vertex &,const Vertex &,Vertex);
+    void drawFlatTriangle(Vertex &,Vertex &,Vertex &,Vertex &,Vertex &,Vertex);
     Canvas* m_canvas;
-private:
-    void fillBottomFlatTriangle(maths::vec3f v1,maths::vec3f v2, maths::vec3f v3);
-    void fillTopFlatTriangle(maths::vec3f v1,maths::vec3f v2, maths::vec3f v3);
     std::array<Vertex,3> vertex;
+private:
+    void fillBottomFlatTriangle(Vertex& v1,Vertex& v2, Vertex& v3);
+    void fillTopFlatTriangle(Vertex& v1,Vertex& v2, Vertex& v3);
 };

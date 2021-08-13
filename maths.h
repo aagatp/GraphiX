@@ -16,15 +16,6 @@ namespace maths{
     using vec4f = std::array<float,4>;
     using vec4i = std::array<int,4>;
 
-    using vec5f = std::array<float,5>;
-    using vec5i = std::array<int,5>;
-
-    using vec6f = std::array<float,6>;
-    using vec6i = std::array<int,6>;
-
-    using vec7f = std::array<float,7>;
-    using vec7i = std::array<int,7>;
-
     using mat4f = std::array<std::array<float,4>,4>;
     using mat4i = std::array<std::array<int,4>,4>;
 
@@ -45,6 +36,8 @@ namespace maths{
     vec3f mul(mat4f a, vec3f b);
 
     vec3f mul(vec3f a, float num);
+
+    vec3f div(vec3f a, float num);
 
     vec3f add(vec3f a, vec3f b);
 
@@ -78,8 +71,6 @@ namespace maths{
 
     float max(float,float);
 
-    std::vector<float> interpolate(float, float, float, float);
-
     vec3f getnormal(vec3f, vec3f, vec3f);
 
     mat4f matinverse(mat4f);
@@ -87,4 +78,8 @@ namespace maths{
     mat4f transpose(mat4f);
 
     mat4f matidentity();
+
+    vec3f floatToInt(vec3f);
+
+    vec3f barycentric(vec3f,vec3f,vec3f,vec3f);
 }

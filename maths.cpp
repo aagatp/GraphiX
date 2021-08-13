@@ -77,6 +77,10 @@ namespace maths{
         return product;
     }
 
+    vec3f div(vec3f a, float num){
+        return mul(a,1/num);
+    }
+
     vec3f add(vec3f a, vec3f b){
         vec3f product = {};
         for (int i=0; i<3; i++){
@@ -236,24 +240,6 @@ namespace maths{
         }
     }
 
-    std::vector<float> interpolate (float i0, float d0, float il, float dl) {
-        std::vector<float> values;
-
-        if (i0 == il) {
-            values.push_back(d0);
-            return values;
-        }
-
-        float a= (dl - d0) / (il - i0);
-        float d = d0;
-
-        for (int i = i0; i<il;i++) {
-            values.push_back(d);
-            d = d + a;
-        }
-        return values;
-    }
-
     vec3f getnormal(maths::vec3f point1, maths::vec3f point2, maths::vec3f point3){
         maths::vec3f ver1 = maths::sub(point1,point2);
         maths::vec3f ver2 = maths::sub(point1,point3);
@@ -282,4 +268,22 @@ namespace maths{
         return product;
     }
 
+    vec3f floatToInt(vec3f a){
+        vec3f product = {0};
+        for (int i=0; i< 3; i++){
+            product[i] = (int)a[i];
+        }
+        return product;
+    }
+
+    vec3f barycentric(vec3f v1 ,vec3f v2,vec3f v3,vec3f vt){
+        vec3f w = {0};
+        w[0] = ( (v2[1] - v3[1])*( vt[0] - v3[0] ) + ( v3[0] - v2[0]) * (vt[1] - v3[1]) ) / 
+			((v2[1] - v3[1]) * (v1[0] - v3[0]) + (v3[0] - v2[0]) * (v1[1] - v3[1]));
+		w[1] = ((v3[1] - v1[1]) * (vt[0] - v3[0]) + (v1[0] - v3[0]) * (vt[1] - v3[1])) /
+			((v2[1] - v3[1]) * (v1[0] - v3[0]) + (v3[0] - v2[0]) * (v1[1] - v3[1]));
+		w[2] = 1 - w[0] - w[1];
+
+        return w;
+    }
 }

@@ -3,8 +3,8 @@
 
 struct Vertex{
     maths::vec3f normal;
-    maths::vec3f position;
     maths::vec2f texCoords;
+    maths::vec3f position;
     maths::vec3f color;
 
     Vertex() = default;

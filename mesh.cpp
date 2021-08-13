@@ -1,9 +1,12 @@
 #include "mesh.h"
+#include <algorithm>
 
 Mesh::Mesh(Canvas* mcanvas){
     canvas = mcanvas;
     projection = maths::matidentity();
     view = maths::matidentity();
+    isWireframe = true;
+    isGouraudShade = false;
 }
 
 void Mesh::load(std::string filename){
@@ -182,11 +185,14 @@ void Mesh::render(){
         if (backFaceCulling(temptri)){
             continue;
         }
-
+        
         //Shading
-        temptri.color = maths::normalize({220,220,220});
-        flatShading(temptri);
-
+        temptri.color = {220,200,180};
+        if (isGouraudShade)
+            gouraudShading(temptri);
+        else
+            flatShading(temptri);
+            
         //View Transform
         temptri.vertices[0] = maths::mul(view, temptri.vertices[0]);
         temptri.vertices[1] = maths::mul(view, temptri.vertices[1]);
@@ -198,7 +204,6 @@ void Mesh::render(){
         temptri.vertices[1] = maths::mul(projection, temptri.vertices[1]);
         temptri.vertices[2] = maths::mul(projection, temptri.vertices[2]);
         
-
         // Viewport Transformation
         temptri.vertices[0] = maths::mul(maths::translate(1.0,1.0,0.0),temptri.vertices[0]);
         temptri.vertices[1] = maths::mul(maths::translate(1.0,1.0,0.0),temptri.vertices[1]);
@@ -208,12 +213,25 @@ void Mesh::render(){
         temptri.vertices[1] = maths::mul(maths::scale(0.5*canvas->scrWidth,0.5*canvas->scrHeight,1.0),temptri.vertices[1]);
         temptri.vertices[2] = maths::mul(maths::scale(0.5*canvas->scrWidth,0.5*canvas->scrHeight,1.0),temptri.vertices[2]);
 
+        temptri.populateVertices();
+
         finalTris.push_back(temptri);
     }
 
+        //Depth buffer -- painter's algorithm
+    // std::sort(finalTris.begin(), finalTris.end(), [](Triangle &t1, Triangle &t2)
+    // {
+    //     float z1 = (t1.vertex[0].position[2] + t1.vertex[1].position[2] + t1.vertex[2].position[2]) / 3.0f;
+    //     float z2 = (t2.vertex[0].position[2] + t2.vertex[1].position[2] + t2.vertex[2].position[2]) / 3.0f;
+    //     return z1 > z2;
+    // });
+
+
     for (auto& tri:finalTris){
-        // tri.wireframe_draw();
-        tri.rasterize();
+        if (isWireframe)
+            tri.wireframe_draw();
+        else
+            tri.rasterize();
     }
 }
 
@@ -222,19 +240,16 @@ bool Mesh::backFaceCulling(Triangle& tri){
     maths::vec3f v2 = tri.vertices[1];
     maths::vec3f v3 = tri.vertices[2];
 
-    maths::vec3f n1 = tri.normals[0];
-    maths::vec3f n2 = tri.normals[1];
-    maths::vec3f n3 = tri.normals[2];
+    maths::vec3f centroid;
+    centroid[0] = (v1[0] + v2[0] + v3[0]) / 3; 
+    centroid[1] = (v1[1] + v2[1] + v3[1]) / 3; 
+    centroid[2] = (v1[2] + v2[2] + v3[2]) / 3;
 
-    maths::vec3f view1 =maths::normalize(maths::sub(camera->m_pos,v1));
-    maths::vec3f view2 =maths::normalize(maths::sub(camera->m_pos,v2));
-    maths::vec3f view3 =maths::normalize(maths::sub(camera->m_pos,v3));
+    maths::vec3f normal = maths::getnormal(centroid,v2,v3);
+    maths::vec3f view = maths::normalize(maths::sub(camera->m_pos,centroid));
+    float dotProduct = maths::dot(normal,view);
 
-    float dotProduct1 = maths::dot(n1,view1);
-    float dotProduct2 = maths::dot(n2,view2);
-    float dotProduct3 = maths::dot(n3,view3);
-
-    if(dotProduct1 < 0 || dotProduct2 <0 || dotProduct3 <0){
+    if(dotProduct<0){
         return false;
     }
     return true;
@@ -242,8 +257,7 @@ bool Mesh::backFaceCulling(Triangle& tri){
 
 float Mesh::calculateIntensity(maths::vec3f point, maths::vec3f normal, maths::vec3f view){
 
-    float i = 0.0;
-    maths::vec3f position = {30,30,30};
+    maths::vec3f position = {10,10,10};
     maths::vec3f l_dir = maths::normalize(maths::sub(position,point));
     float ambientInt = 0.9;
     float pointInt = 0.5;
@@ -260,7 +274,9 @@ float Mesh::calculateIntensity(maths::vec3f point, maths::vec3f normal, maths::v
     float specularLight = specularConstant * pointInt * pow(maths::dot(reflection,view),32);
     
     float tmp = ambientLight+diffuseLight;
-    tmp = tmp > 1 ? 1: tmp;
+    tmp = (tmp > 1) ? 1: tmp;
+    // tmp = (tmp < 0.8) ? 0.8 : tmp;
+    // std::cout << tmp << '\t';
     return tmp;
 }
 
@@ -276,21 +292,18 @@ void Mesh::flatShading(Triangle& tri){
     centroid[1] = (v1[1] + v2[1] + v3[1]) / 3; 
     centroid[2] = (v1[2] + v2[2] + v3[2]) / 3;
 
+    maths::vec3f normal = maths::getnormal(centroid,v2,v3);
     maths::vec3f view = maths::normalize(maths::sub(camera->m_pos,centroid));
 
-    maths::vec3f normal = maths::getnormal(centroid,v2,v3);
-
     float intensity = calculateIntensity(centroid,normal,view);
-    maths::vec3f newColor = maths::mul(tri.color,intensity);
-
-    tri.color = newColor;
+    tri.setIntensity(maths::vec3f{intensity,intensity,intensity});
 }
     
 void Mesh::gouraudShading(Triangle& tri){
     maths::vec3f intensity;
     int count = 0;
     for (auto& vertex: tri.vertices){
-        maths::vec3f view = maths::normalize(maths::sub({0,0,10},vertex));
+        maths::vec3f view = maths::normalize(maths::sub(camera->m_pos,vertex));
         intensity[count] = calculateIntensity(vertex,tri.normals[count],view);
         count++;
     }

@@ -13,7 +13,7 @@ Canvas::Canvas(int argc,char **argv){
     glutInitWindowPosition(0, 0);
     glutCreateWindow("Dharahara");
     // //This function is called for window resize. Also called when first window created
-    // glutReshapeFunc(Canvas::reshape);
+    glutReshapeFunc(Canvas::reshape);
 
 }
 
@@ -35,7 +35,8 @@ void Canvas::update(int val) {
     //The fps given below is maximum fps limit
     int maxfps = 60;
 
-    glClear( GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT);
+    // glClearColor(50,50,50,1);
     glutPostRedisplay();
     glutTimerFunc(1000 /maxfps, update, 0);
 }
@@ -47,11 +48,11 @@ void Canvas::display() {
 
     while (!buffers.empty()){
         Buffer tmp = buffers.back();
-        float x = tmp.cords[0];
-        float y = tmp.cords[1];
+        int x = tmp.cords[0];
+        int y = tmp.cords[1];
         maths::vec3f col = tmp.color;
         buffers.pop_back();
-        glColor4f(col[0],col[1],col[2],1);
+        glColor3ub(col[0],col[1],col[2]);
         glVertex2f(x,y);
     }
     glEnd();
@@ -64,7 +65,6 @@ void Canvas::putpixel(float x, float y,float zBuf, const maths::vec3f col) {
     
     //Stores the pixels in buffers to draw later in display func
     Buffer tmp;
-    // tmp.cords = {(x+1)*(float)0.5*(scrWidth),(y+1)*(float)0.5*(scrHeight)};
     tmp.cords = {x,y};
     tmp.color = col;
     buffers.push_back(tmp);
@@ -79,7 +79,7 @@ void Canvas::drawline(float x1, float y1, float x2, float y2, const maths::vec3f
     dx = abs(x2 - x1);
     dy = abs(y2 - y1);
 
-    float lx, ly;
+    int lx, ly;
 
     if (x2 > x1) { lx = 1; }
     else { lx = -1; }

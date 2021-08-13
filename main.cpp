@@ -20,17 +20,14 @@ void processKeys(unsigned char key, int x, int y){
         mesh->yrotate(0.05);
     else if (key=='l')
         mesh->yrotate(-0.05);
+    else if (key=='e')
+        mesh->isWireframe = !mesh->isWireframe;
+    else if (key=='g')
+        mesh->isGouraudShade=!mesh->isGouraudShade;
     else
         camera->processKeyboard(key,deltaTime);
 }
 
-void processMouseMotion(int xpos, int ypos) {
-    camera->processMouse(xpos, ypos);
-}
-
-void processMouseClick(int button,int state, int xpos, int ypos){
-    camera->processClicks(button,state,xpos,ypos);
-}
 
 void renderer(){
 
@@ -62,15 +59,11 @@ int main(int argc, char** argv){
 
     //Creating mesh
     mesh=new Mesh(canvas);
-    mesh->parse("../res/dharaharascene.obj");
+    mesh->parse("../res/dharahara.obj");
     mesh->camera = camera;
 
     //Glut specific functions
-    glutReshapeFunc(canvas->reshape);
     glutDisplayFunc(renderer);
     glutKeyboardFunc(processKeys);
-    glutMotionFunc(processMouseMotion);
-    glutMouseFunc(processMouseClick);
     glutMainLoop();
-
 }

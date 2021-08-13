@@ -30,6 +30,8 @@ public:
     void setProjection(maths::mat4f);
 
     Camera* camera;
+    bool isWireframe;
+    bool isGouraudShade;
 private:
     std::vector<Triangle> triangles;
     Canvas* canvas;
