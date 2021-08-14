@@ -3,7 +3,7 @@
 
 Camera::Camera()
 {
-    m_pos         = {1.0f, 1.0f, 20.0f};
+    m_pos         = {1.0f, 1.0f, 30.0f};
     m_front       = {0.0f, 0.0f, -1.0f};
     m_up          = {0.0f, 1.0f, 0.0f};
     m_right       = maths::normalize(maths::cross(m_front,m_up));

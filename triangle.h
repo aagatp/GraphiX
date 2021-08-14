@@ -14,12 +14,9 @@ public:
     void setNormals(maths::vec3f na, maths::vec3f nb, maths::vec3f nc);
     void setTexCoords(maths::vec2f, maths::vec2f, maths::vec2f);
     void flatRasterize();
-    void gouraudRasterize();
-    void populateVertices();
     void rasterize();
-    void baryRasterize();
-    void shadeLine(float,float,float);
     void wireframe_draw();
+    void populateVertices();
     std::array <maths::vec3f,3> vertices;
     std::array <maths::vec3f,3> normals;
     std::array <maths::vec2f,3> texCoords;

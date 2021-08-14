@@ -79,7 +79,5 @@ namespace maths{
 
     mat4f matidentity();
 
-    vec3f floatToInt(vec3f);
-
     vec3f barycentric(vec3f,vec3f,vec3f,vec3f);
 }

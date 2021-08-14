@@ -10,6 +10,25 @@ Camera* camera;
 Mesh* mesh;
 float deltaTime;
 
+void processArrowKeys(int key, int x, int y){
+    switch (key){
+        case GLUT_KEY_RIGHT:
+                mesh->lightpos[0] += 1;
+                break;
+
+        case GLUT_KEY_LEFT:
+                mesh->lightpos[0] -= 1;
+                break;
+
+        case GLUT_KEY_UP:
+                mesh->lightpos[2] += 1;
+                break;
+
+        case GLUT_KEY_DOWN:
+                mesh->lightpos[2] -= 1;
+                break;
+    }
+}
 
 void processKeys(unsigned char key, int x, int y){
     if (key=='j')
@@ -28,7 +47,6 @@ void processKeys(unsigned char key, int x, int y){
         camera->processKeyboard(key,deltaTime);
 }
 
-
 void renderer(){
 
     //Calculate deltatime and framePerSecond
@@ -39,7 +57,7 @@ void renderer(){
 
     maths::mat4f view = camera->getViewMatrix();
     maths::mat4f projection = maths::perspective(maths::radians(camera->zoom), (float)canvas->scrWidth/canvas->scrHeight);
-
+    
     mesh->setView(view);
     mesh->setProjection(projection);
     mesh->render();
@@ -59,11 +77,12 @@ int main(int argc, char** argv){
 
     //Creating mesh
     mesh=new Mesh(canvas);
-    mesh->parse("../res/dharahara.obj");
+    mesh->parse("../res/dharaharascene.obj");
     mesh->camera = camera;
 
     //Glut specific functions
     glutDisplayFunc(renderer);
     glutKeyboardFunc(processKeys);
+    glutSpecialFunc(processArrowKeys);
     glutMainLoop();
 }

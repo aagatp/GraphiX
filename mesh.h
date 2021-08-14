@@ -32,6 +32,7 @@ public:
     Camera* camera;
     bool isWireframe;
     bool isGouraudShade;
+    maths::vec3f lightpos;
 private:
     std::vector<Triangle> triangles;
     Canvas* canvas;

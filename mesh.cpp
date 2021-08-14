@@ -7,6 +7,7 @@ Mesh::Mesh(Canvas* mcanvas){
     view = maths::matidentity();
     isWireframe = true;
     isGouraudShade = false;
+    lightpos = {10,10,10};
 }
 
 void Mesh::load(std::string filename){
@@ -71,15 +72,11 @@ void Mesh::parse(std::string filename){
         char trash;
         if (!line.compare(0, 2, "v "))  //starts with v<space>
         {   
-
-            // std::cout << count;           
             iss >> trash; // first character is v
             maths::vec3f v;
-            // followed by xyz co-ords
             iss >> v[0];
             iss >> v[1];
             iss >> v[2];
-            // maths::printvec(v);
             verts.push_back(v);
             count++;
         }
@@ -109,7 +106,6 @@ void Mesh::parse(std::string filename){
             iss >> trash; //first charecter is f
 
             while (iss >> temp[0] >> trash >> temp[1] >> trash >> temp[2])
-            // in the form vert/vertTex/norm (vert is read, the rest are treated as trash)
             {
                 //in wavefront obj all indices start at 1, not zero
                 temp[0]--;   //vert
@@ -119,7 +115,6 @@ void Mesh::parse(std::string filename){
             }
             Triangle tri(canvas);
             tri.setVertex(verts[f[0][0]],verts[f[1][0]],verts[f[2][0]]);
-            // std::cout  << f[0][0] <<'\n';       
             tri.setTexCoords(textures[f[0][1]],textures[f[1][1]],textures[f[2][1]]);
             tri.setNormals(normals[f[0][2]],normals[f[1][2]],normals[f[2][2]]);
             triangles.push_back(tri);
@@ -208,7 +203,7 @@ void Mesh::render(){
         temptri.vertices[0] = maths::mul(maths::translate(1.0,1.0,0.0),temptri.vertices[0]);
         temptri.vertices[1] = maths::mul(maths::translate(1.0,1.0,0.0),temptri.vertices[1]);
         temptri.vertices[2] = maths::mul(maths::translate(1.0,1.0,0.0),temptri.vertices[2]);
-        //.continued
+        
         temptri.vertices[0] = maths::mul(maths::scale(0.5*canvas->scrWidth,0.5*canvas->scrHeight,1.0),temptri.vertices[0]);
         temptri.vertices[1] = maths::mul(maths::scale(0.5*canvas->scrWidth,0.5*canvas->scrHeight,1.0),temptri.vertices[1]);
         temptri.vertices[2] = maths::mul(maths::scale(0.5*canvas->scrWidth,0.5*canvas->scrHeight,1.0),temptri.vertices[2]);
@@ -218,13 +213,13 @@ void Mesh::render(){
         finalTris.push_back(temptri);
     }
 
-        //Depth buffer -- painter's algorithm
-    // std::sort(finalTris.begin(), finalTris.end(), [](Triangle &t1, Triangle &t2)
-    // {
-    //     float z1 = (t1.vertex[0].position[2] + t1.vertex[1].position[2] + t1.vertex[2].position[2]) / 3.0f;
-    //     float z2 = (t2.vertex[0].position[2] + t2.vertex[1].position[2] + t2.vertex[2].position[2]) / 3.0f;
-    //     return z1 > z2;
-    // });
+    //Depth buffer -- painter's algorithm
+    std::sort(finalTris.begin(), finalTris.end(), [](Triangle &t1, Triangle &t2)
+    {
+        float z1 = (t1.vertex[0].position[2] + t1.vertex[1].position[2] + t1.vertex[2].position[2]) / 3.0f;
+        float z2 = (t2.vertex[0].position[2] + t2.vertex[1].position[2] + t2.vertex[2].position[2]) / 3.0f;
+        return z1 > z2;
+    });
 
 
     for (auto& tri:finalTris){
@@ -246,7 +241,7 @@ bool Mesh::backFaceCulling(Triangle& tri){
     centroid[2] = (v1[2] + v2[2] + v3[2]) / 3;
 
     maths::vec3f normal = maths::getnormal(centroid,v2,v3);
-    maths::vec3f view = maths::normalize(maths::sub(camera->m_pos,centroid));
+    maths::vec3f view = maths::normalize(maths::sub(centroid,camera->m_pos));
     float dotProduct = maths::dot(normal,view);
 
     if(dotProduct<0){
@@ -257,26 +252,23 @@ bool Mesh::backFaceCulling(Triangle& tri){
 
 float Mesh::calculateIntensity(maths::vec3f point, maths::vec3f normal, maths::vec3f view){
 
-    maths::vec3f position = {10,10,10};
-    maths::vec3f l_dir = maths::normalize(maths::sub(position,point));
-    float ambientInt = 0.9;
+    maths::vec3f l_dir = maths::normalize(maths::sub(lightpos,point));
+    float ambientInt = 0.2;
     float pointInt = 0.5;
 
     float ambientConstant = 1;
-    float diffuseConstant = 0.7;
-    float specularConstant = 0.8;
+    float diffuseConstant = 1;
+    float specularConstant = 1;
 
     float ambientLight = ambientConstant*ambientInt;
     
     float diffuseLight = maths::max(diffuseConstant* 1 *maths::dot(normal,l_dir),0.0f);
 
     maths::vec3f reflection = maths::normalize(maths::sub(maths::mul(normal,(2* maths::dot(normal,l_dir))),l_dir));
-    float specularLight = specularConstant * pointInt * pow(maths::dot(reflection,view),32);
+    float specularLight = specularConstant * pointInt * pow(maths::dot(reflection,view),4);
     
     float tmp = ambientLight+diffuseLight;
     tmp = (tmp > 1) ? 1: tmp;
-    // tmp = (tmp < 0.8) ? 0.8 : tmp;
-    // std::cout << tmp << '\t';
     return tmp;
 }
 
