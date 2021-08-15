@@ -40,12 +40,12 @@ void Camera::processKeyboard(unsigned char key,float dt)
             m_pos = maths::sub(m_pos,maths::mul(m_front,m_velocity));
             break;
 
-        case 'z':
-            zoom = zoom > 200.0f ? 200.0f : zoom+10*dt;
+        case 'x':
+            zoom = zoom > 200.0f ? 200.0f : zoom+5*dt;
             break;
 
-        case 'x':
-            zoom = zoom < 0.05 ? 0.05 : zoom-10*dt;
+        case 'z':
+            zoom = zoom < 0.05 ? 0.05 : zoom-5*dt;
             break;
             
         case 'q':

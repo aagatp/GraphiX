@@ -178,6 +178,9 @@ void Mesh::processKeyboard(char key, float dt){
         case 'g':
             isGouraudShade = !isGouraudShade;
             break;
+        case 't':
+            isTextured = !isTextured;
+            break;
         case 'j':
             xrotate(0.05);
             break;
@@ -232,15 +235,6 @@ void Mesh::render(){
 
         finalTris.push_back(temptri);
     }
-
-    //Depth buffer -- painter's algorithm
-    std::sort(finalTris.begin(), finalTris.end(), [](Triangle &t1, Triangle &t2)
-    {
-        float z1 = (t1.vertices[0][2] + t1.vertices[1][2] + t1.vertices[2][2]) / 3.0f;
-        float z2 = (t2.vertices[0][2] + t2.vertices[1][2] + t2.vertices[2][2]) / 3.0f;
-        return z1 < z2;
-    });
-
 
     for (auto& tri:finalTris){
         if (isWireframe)

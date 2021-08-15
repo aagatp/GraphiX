@@ -133,10 +133,13 @@ void Triangle::drawFlatTriangle(Vertex& v1, Vertex& v2, Vertex&v3, Vertex& d1, V
         const float dx = e2.position[0] - e1.position[0];
         const auto diLine = (e2 - iLine) / dx;
         iLine += diLine * (float(xStart)+0.5f- e1.position[0]);
+
         for (int x = xStart; x < xEnd; x++, iLine += diLine)
         {
+            // recover z from interpolation of 1/z
+            const float z = 1.0f/iLine.position[2];
             maths::vec3f color = {iLine.color[0], iLine.color[1], iLine.color[2]};
-            m_canvas->putpixel(x, y,1, color);
+            m_canvas->putpixel(x, y,z, color);
         }
     }
 }

@@ -1,8 +1,8 @@
 #include "canvas.h"
-#include <limits>
 
 int Canvas::scrHeight = 1080;
 int Canvas::scrWidth = 1920;
+// float* Canvas::zbuffers= new float[scrHeight*scrWidth];
 
 Canvas::Canvas(int argc,char **argv){
 
@@ -12,7 +12,7 @@ Canvas::Canvas(int argc,char **argv){
     glutInitWindowPosition(0, 0);
     glutCreateWindow("Graphix");
     glutReshapeFunc(Canvas::reshape);
-    
+
 }
 void Canvas::reshape(int w, int h) {
     auto oldWidth = scrWidth;
@@ -28,6 +28,7 @@ void Canvas::reshape(int w, int h) {
 
 void Canvas::update(int value) {
     glClear( GL_COLOR_BUFFER_BIT);
+
     float fps = 60;
     glutPostRedisplay();
     glutTimerFunc(1000 /fps, update, 0);
@@ -35,25 +36,41 @@ void Canvas::update(int value) {
 void Canvas::display() {
     
     glBegin(GL_POINTS);
-    while (!buffers.empty()){
-        Buffer tmp = buffers.back();
-        float x = tmp.cords[0];
-        float y = tmp.cords[1];
-        maths::vec3f col = tmp.color;
-        buffers.pop_back();
-        glColor3ub(col[0], col[1], col[2]);
-        glVertex2f(x, y);
+    for (auto it=buffermaps.begin(); it!=buffermaps.end(); ++it){
+        Buffer tmp = it->second;
+        glColor3ub(tmp.color[0],tmp.color[1],tmp.color[2]);
+        glVertex2i(tmp.cords[0],tmp.cords[1]);
     }
     glEnd();
     glutSwapBuffers();
-
+    buffermaps.clear();
 }
 
 void Canvas::putpixel(float x, float y,float zBuf, const maths::vec3f col) {
-    Buffer tmp;
-    tmp.cords = {x,y};
-    tmp.color = col;
-    buffers.push_back(tmp);
+    
+    
+    // Clipping
+    if (x>0 && x<scrWidth && y>0 && y<scrWidth){
+
+        //Depth Test
+        auto tmp = buffermaps.find((int)x+(int)y*scrWidth);
+        if (tmp!= buffermaps.end()){
+            if (zBuf > buffermaps.at((int)x+(int)y*scrWidth).zBuffer){
+                Buffer tmp;
+                tmp.cords = {(int)x,(int)y};
+                tmp.color = col;
+                tmp.zBuffer = zBuf;
+                buffermaps[(int)x+(int)y*scrWidth] = tmp;
+            }
+        }
+        else{
+            Buffer tmp;
+            tmp.cords = {(int)x,(int)y};
+            tmp.color = col;
+            tmp.zBuffer = zBuf;
+            buffermaps[(int)x+(int)y*scrWidth] = tmp;
+        }
+    }
 }
 
 void Canvas::drawline(float x1, float y1, float x2, float y2, const maths::vec3f color)

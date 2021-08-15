@@ -34,6 +34,7 @@ void renderer(){
     mesh->setView(view);
     mesh->setProjection(projection);
 
+    
     mesh->render(); // engine pipeline lies here
 
     canvas->update();

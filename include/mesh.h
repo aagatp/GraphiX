@@ -43,6 +43,7 @@ private:
 
     bool isWireframe;
     bool isGouraudShade;
+    bool isTextured;
 
     maths::mat4f view;
     maths::mat4f projection;

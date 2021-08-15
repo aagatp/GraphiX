@@ -4,10 +4,13 @@
 #include <iostream>
 #include <functional>
 #include <vector>
+#include <map>
+#include <limits>
 
 struct Buffer{
-    maths::vec2f cords;
+    maths::vec2i cords;
     maths::vec3f color;
+    float zBuffer=std::numeric_limits<float>::min();
 };
 
 class Canvas{
@@ -23,4 +26,6 @@ public:
     // void drawline(float x1, float y1, float x2, float y2, const maths::vec3f color);
     static int scrHeight, scrWidth;
     std::vector<Buffer> buffers;
+
+    std::map<int,Buffer> buffermaps;
 };
