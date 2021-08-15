@@ -7,36 +7,43 @@
 #include <sstream>
 #include "maths.h"
 #include "camera.h"
+#include "light.h"
 
 class Mesh{
 public:
-    Mesh(Canvas*);
+    Mesh(Canvas*,Light*);
     void load(std::string);
     void parse(std::string);
+
     void xrotate(float);
     void yrotate(float);
     void zrotate(float);
     void translate(float,float,float);
     void scale(float, float, float);
-    void applyTransform(maths::mat4f&);
+
     bool backFaceCulling(Triangle&);
-    float calculateIntensity(maths::vec3f point, maths::vec3f normal, maths::vec3f view);
+
     void flatShading(Triangle& tri);
     void gouraudShading(Triangle& tri);
     void phongShading(Triangle& tri);
     
-    void render();
     void setView(maths::mat4f);
     void setProjection(maths::mat4f);
 
+    void processKeyboard(char, float);
+    void render();
+
     Camera* camera;
-    bool isWireframe;
-    bool isGouraudShade;
-    maths::vec3f lightpos;
+    Canvas* canvas;
+    Light* light;
+
 private:
     std::vector<Triangle> triangles;
-    Canvas* canvas;
     std::vector<Triangle> finalTris;
+
+    bool isWireframe;
+    bool isGouraudShade;
+
     maths::mat4f view;
     maths::mat4f projection;
 };

@@ -48,22 +48,6 @@ void Camera::processKeyboard(unsigned char key,float dt)
             zoom = zoom < 0.05 ? 0.05 : zoom-10*dt;
             break;
             
-        // case 'j':
-        //     m_pos= maths::mul(maths::x_rotation(-0.05),m_pos);
-        //     break;
-
-        // case 'k':
-        //     m_pos= maths::mul(maths::x_rotation(0.05),m_pos);
-        //     break;
-
-        // case 'h':
-        //     m_pos= maths::mul(maths::y_rotation(-0.05),m_pos);
-        //     break;
-
-        // case 'l':
-        //     m_pos= maths::mul(maths::y_rotation(0.05),m_pos);
-        //     break;
-        
         case 'q':
             exit(0);
 
@@ -72,7 +56,20 @@ void Camera::processKeyboard(unsigned char key,float dt)
 
 maths::mat4f Camera::getViewMatrix()
 {
-    maths::mat4f view;
-    view = maths::lookAt(m_pos, maths::add(m_pos,m_front), m_up);
+    //Look At Matrix
+    maths::vec3f eye = m_pos;
+    maths::vec3f target = maths::add(m_pos,m_front);
+
+    maths::vec3f forward = maths::normalize(maths::sub(eye,target));
+    maths::vec3f right = maths::normalize(maths::cross(m_up,forward));
+    maths::vec3f up = maths::normalize(maths::cross(forward,right));
+
+    maths::mat4f view ={{
+        {right[0],right[1],right[2],-maths::dot(right,eye)},
+        {up[0],up[1],up[2],-maths::dot(up,eye)},
+        {forward[0],forward[1],forward[2],-maths::dot(forward,eye)},
+        {0,0,0,1}
+    }};
+    
     return view;
 }

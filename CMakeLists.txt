@@ -1,11 +1,16 @@
 cmake_minimum_required(VERSION 3.1)
-project(Project)
+project(Graphix)
 
 ## main project files
-set (includes "maths.h" "triangle.h" "canvas.h" "mesh.h" "camera.h")
-set (files "main.cpp" "triangle.cpp" "mesh.cpp" "canvas.cpp" "camera.cpp" "maths.cpp")
 
-add_executable(${PROJECT_NAME} ${files} ${includes})
+set (files "main.cpp")
+add_executable(${PROJECT_NAME} ${files})
 
+file (GLOB sources src/*.cpp)
+
+add_library(mylib ${sources})
+target_include_directories(mylib PUBLIC include)
+target_link_libraries(${PROJECT_NAME} PRIVATE mylib)
+
+#glut / freeglut
 target_link_libraries(${PROJECT_NAME} PRIVATE glut GLU GL)
-

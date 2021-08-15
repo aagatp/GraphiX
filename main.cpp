@@ -2,49 +2,22 @@
 #include "camera.h"
 #include "maths.h"
 #include "mesh.h"
-
+#include "light.h"
 
 //Global Setup
 Canvas* canvas;
 Camera* camera;
 Mesh* mesh;
+Light* light;
 float deltaTime;
 
 void processArrowKeys(int key, int x, int y){
-    switch (key){
-        case GLUT_KEY_RIGHT:
-                mesh->lightpos[0] += 1;
-                break;
-
-        case GLUT_KEY_LEFT:
-                mesh->lightpos[0] -= 1;
-                break;
-
-        case GLUT_KEY_UP:
-                mesh->lightpos[2] += 1;
-                break;
-
-        case GLUT_KEY_DOWN:
-                mesh->lightpos[2] -= 1;
-                break;
-    }
+    light->processKeyboard(key,deltaTime);
 }
 
 void processKeys(unsigned char key, int x, int y){
-    if (key=='j')
-        mesh->xrotate(0.05);
-    else if (key=='k')
-        mesh->xrotate(-0.05);
-    else if (key=='h')
-        mesh->yrotate(0.05);
-    else if (key=='l')
-        mesh->yrotate(-0.05);
-    else if (key=='e')
-        mesh->isWireframe = !mesh->isWireframe;
-    else if (key=='g')
-        mesh->isGouraudShade=!mesh->isGouraudShade;
-    else
-        camera->processKeyboard(key,deltaTime);
+    camera->processKeyboard(key,deltaTime);
+    mesh->processKeyboard(key,deltaTime);
 }
 
 void renderer(){
@@ -60,7 +33,8 @@ void renderer(){
     
     mesh->setView(view);
     mesh->setProjection(projection);
-    mesh->render();
+
+    mesh->render(); // engine pipeline lies here
 
     canvas->update();
     canvas->display();
@@ -75,14 +49,17 @@ int main(int argc, char** argv){
     //Camera setup
     camera = new Camera();
 
+    //Setup Lights
+    light = new Light();
+
     //Creating mesh
-    mesh=new Mesh(canvas);
+    mesh=new Mesh(canvas,light);
     mesh->parse("../res/dharaharascene.obj");
     mesh->camera = camera;
 
     //Glut specific functions
-    glutDisplayFunc(renderer);
     glutKeyboardFunc(processKeys);
     glutSpecialFunc(processArrowKeys);
+    glutDisplayFunc(renderer);
     glutMainLoop();
 }

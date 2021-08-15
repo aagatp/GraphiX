@@ -8,3 +8,5 @@ compile.sh
 build.sh
 
 res/*
+
+!res/sphere.obj

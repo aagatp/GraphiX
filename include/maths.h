@@ -45,7 +45,7 @@ namespace maths{
 
     vec3f negate(vec3f a);
 
-    mat4f orthoproject();
+    mat4f orthographic();
 
     mat4f perspective(float, float);
 
@@ -56,10 +56,6 @@ namespace maths{
     mat4f y_rotation(float);
 
     mat4f z_rotation(float);
-
-    mat4f rotate(float, float, float, float);
-
-    mat4f lookAt(vec3f eye, vec3f target, vec3f vUp={0,1,0});
 
     mat4f translate(float tx, float ty, float tz);
     
@@ -75,9 +71,11 @@ namespace maths{
 
     mat4f matinverse(mat4f);
 
-    mat4f transpose(mat4f);
-
     mat4f matidentity();
 
+    mat4f mattranspose(mat4f);
+
     vec3f barycentric(vec3f,vec3f,vec3f,vec3f);
+
+    vec3f centroid(vec3f,vec3f,vec3f);
 }

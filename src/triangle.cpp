@@ -1,10 +1,11 @@
 #include "triangle.h"
 #include <algorithm>
 #include <limits>
+#include <ctime>
 
 Triangle::Triangle(Canvas* canvas){
     m_canvas = canvas;
-    color = {200,200,200};
+    color = {240,220,200};
     vertices = {{
         {0,0,0},
         {0,0,0},
@@ -16,7 +17,7 @@ Triangle::Triangle(Canvas* canvas){
 
 Triangle::Triangle(Canvas* canvas, maths::vec3f a, maths::vec3f b, maths::vec3f c){
     m_canvas = canvas;
-    color = {200,200,200};
+    color = {240,220,200};
     vertices = {a,b,c};
     intensities = {1,1,1};
     populateVertices();
@@ -52,12 +53,9 @@ void Triangle::populateVertices(){
 }
 
 void Triangle::rasterize(){
-    flatRasterize();
-    // baryRasterize();
-}
 
-void Triangle::flatRasterize()
-{
+    populateVertices();
+
     auto v1 = vertex[0];
     auto v2 = vertex[1];
     auto v3 = vertex[2];
@@ -91,6 +89,7 @@ void Triangle::flatRasterize()
         }
     }
 }
+
 
 void Triangle::fillBottomFlatTriangle(Vertex& v1, Vertex& v2, Vertex& v3)
 {   
@@ -144,8 +143,14 @@ void Triangle::drawFlatTriangle(Vertex& v1, Vertex& v2, Vertex&v3, Vertex& d1, V
 
 void Triangle::wireframe_draw(){
     
-    m_canvas->drawline(vertices[0][0],vertices[0][1],vertices[1][0],vertices[1][1],color);
-	m_canvas->drawline(vertices[1][0],vertices[1][1],vertices[2][0],vertices[2][1],color);
-	m_canvas->drawline(vertices[2][0],vertices[2][1],vertices[0][0],vertices[0][1],color);
+    populateVertices();
+    
+    auto v1 = vertex[0].position;
+    auto v2 = vertex[1].position;
+    auto v3 = vertex[2].position;
+
+    m_canvas->drawline(v1[0],v1[1],v2[0],v2[1],color);
+	m_canvas->drawline(v2[0],v2[1],v3[0],v3[1],color);
+	m_canvas->drawline(v3[0],v3[1],v1[0],v1[1],color);
 }
 

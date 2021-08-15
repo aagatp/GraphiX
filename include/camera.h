@@ -1,7 +1,7 @@
 #pragma once
 #include "maths.h"
 
-
+//Pinhole camera model
 class Camera
 {
 public:
@@ -11,14 +11,9 @@ public:
     maths::mat4f getViewMatrix();
 
     float zoom;
-    float deltaTime;
     maths::vec3f m_pos;
     maths::vec3f m_front;
     maths::vec3f m_up;
     maths::vec3f m_right;
     float m_speed;
-    maths::vec2i m_mousePos;
-    int lastX;
-    int lastY;
 };
-

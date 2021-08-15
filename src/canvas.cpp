@@ -10,7 +10,7 @@ Canvas::Canvas(int argc,char **argv){
     glutInit(&argc, argv);
     glutInitWindowSize(scrWidth,scrHeight);
     glutInitWindowPosition(0, 0);
-    glutCreateWindow("Dharahara");
+    glutCreateWindow("Graphix");
     glutReshapeFunc(Canvas::reshape);
     
 }

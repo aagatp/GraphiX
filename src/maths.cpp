@@ -64,7 +64,6 @@ namespace maths{
             }
         }
         float tmp = homogenous_product[3];
-        // float tmp = 1;
         vec3f product = {homogenous_product[0]/tmp,homogenous_product[1]/tmp,homogenous_product[2]/tmp};
         return product;
     }
@@ -103,7 +102,7 @@ namespace maths{
         return product;
     }
 
-    mat4f orthoproject(){
+    mat4f orthographic(){
         mat4f ortho= {{{1, 0, 0, 0},{0, 1, 0, 0},{0, 0, 0, 0},{0, 0, 0, 1}}};
         return ortho;
     }
@@ -125,8 +124,8 @@ namespace maths{
         float zFar = 1000.0f;
         float zRange = zNear- zFar;
         mat4f projection = {{
-            {1/(aspect*tan(fov/2)),0,0,0},
-            {0,1/tan(fov/2),0,0},
+            {1/(aspect*tanf(fov/2)),0,0,0},
+            {0,1/tanf(fov/2),0,0},
             {0,0,(zFar+zNear)/zRange,(zFar*zNear)/zRange},
             {0,0,-1,0}
             }};
@@ -137,8 +136,8 @@ namespace maths{
     mat4f x_rotation(float pitch){
         mat4f xrotation = {{
             {1, 0,           0,             0},
-            {0, cos(pitch), -sin(pitch),    0},
-            {0, sin(pitch),  cos(pitch),    0},
+            {0, cosf(pitch), -sinf(pitch),    0},
+            {0, sinf(pitch),  cosf(pitch),    0},
             {0, 0,           0,             1}
         }};
         return xrotation;
@@ -146,9 +145,9 @@ namespace maths{
 
     mat4f y_rotation(float yaw){
         mat4f yrotation = {{
-            {cos(yaw),  0,  sin(yaw),   0},
+            {cosf(yaw),  0,  sinf(yaw),   0},
             {0,         1,  0,          0},
-            {-sin(yaw), 0,  cos(yaw),   0},
+            {-sinf(yaw), 0,  cosf(yaw),   0},
             {0,         0,  0,          1}
         }};
         return yrotation;
@@ -156,54 +155,12 @@ namespace maths{
 
     mat4f z_rotation(float roll){
         mat4f zrotation = {{
-            {cos(roll), -sin(roll), 0, 0},
-            {sin(roll), cos(roll),  0, 0},
+            {cosf(roll), -sinf(roll), 0, 0},
+            {sinf(roll),  cosf(roll),  0, 0},
             {0,         1,          0, 0},
             {0,         0,          0, 1}
         }};
         return zrotation;
-    }
-
-    mat4f rotate(float angle, float x, float y, float z){
-        vec3f axis = normalize({x,y,z});
-        mat4f rotation = matidentity();
-        // angle = radians(angle);
-
-        float c = cosf(angle);
-        float s = sinf(angle);
-        float mag = sqrtf(x*x+y*y+z*z);
-
-        vec3f tmp = mul(axis,1-c);
-        rotation[0][0] = c+tmp[0]*axis[0];
-        rotation[0][1] = 0+tmp[0]*axis[1]+s*axis[2];
-        rotation[0][2] = 0+tmp[0]*axis[0]-s*axis[1];
-
-        rotation[1][0] = 0+tmp[1]*axis[0]- s*axis[2];
-        rotation[1][1] = c+tmp[1]*axis[1];
-        rotation[1][2] = 0+tmp[1]*axis[2]-s*axis[0];
-
-        rotation[2][0] = 0+tmp[2]*axis[0]+s*axis[1];
-        rotation[2][1] = 0+tmp[2]*axis[1]-s*axis[0];
-        rotation[2][2] = c+tmp[2]*axis[2];
-        
-        return rotation;
-    }
-
-    mat4f lookAt(vec3f eye, vec3f target, vec3f v_up)
-    {
-        vec3f forward = maths::normalize(maths::sub(eye,target));
-        vec3f right = maths::normalize(maths::cross(v_up,forward));
-        vec3f up = maths::normalize(maths::cross(forward,right));
-
-        mat4f view ={{
-                    {right[0],right[1],right[2],-maths::dot(right,eye)},
-                    {up[0],up[1],up[2],-maths::dot(up,eye)},
-                    {forward[0],forward[1],forward[2],-maths::dot(forward,eye)},
-                    {0,0,0,1}
-                }};
-
-        return view;
-
     }
 
     mat4f translate(float tx, float ty, float tz){
@@ -248,7 +205,7 @@ namespace maths{
         return normal;
     }
 
-    mat4f transpose(mat4f a){
+    mat4f mattranspose(mat4f a){
         mat4f product = {0};
         for (int i=0;i<4;i++){
             for (int j=0;j<4;j++){
@@ -277,5 +234,15 @@ namespace maths{
 		w[2] = 1 - w[0] - w[1];
 
         return w;
+    }
+
+    vec3f centroid(vec3f v1, vec3f v2, vec3f v3){
+        
+        maths::vec3f product;
+        product[0] = (v1[0] + v2[0] + v3[0]) / 3; 
+        product[1] = (v1[1] + v2[1] + v3[1]) / 3; 
+        product[2] = (v1[2] + v2[2] + v3[2]) / 3;
+
+        return product;
     }
 }
