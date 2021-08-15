@@ -1,2 +1,2 @@
-# Graphics-Dharahara
+# Graphix
 Graphics Project from Scratch
