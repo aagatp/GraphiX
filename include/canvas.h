@@ -13,6 +13,11 @@ struct Buffer{
     float zBuffer=std::numeric_limits<float>::min();
 };
 
+struct ShadowBuffer{
+    maths::vec2i cords;
+    float zBuffer=std::numeric_limits<float>::max();
+};
+
 class Canvas{
 public:
     Canvas(int, char**);
@@ -25,7 +30,8 @@ public:
     void drawline(float x1, float y1, float x2, float y2, const maths::vec3f color);
     // void drawline(float x1, float y1, float x2, float y2, const maths::vec3f color);
     static int scrHeight, scrWidth;
-    std::vector<Buffer> buffers;
-
     std::map<int,Buffer> buffermaps;
+    std::map<int,float> shadowmaps;
+
+    void shadowpixel(float x,float y, float shadowBuffer, const maths::vec3f col);
 };

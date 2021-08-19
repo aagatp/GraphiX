@@ -5,7 +5,7 @@
 
 Triangle::Triangle(Canvas* canvas){
     m_canvas = canvas;
-    color = {240,220,200};
+    color = {255, 253, 208};
     vertices = {{
         {0,0,0},
         {0,0,0},
@@ -35,6 +35,11 @@ void Triangle::setNormals(maths::vec3f na, maths::vec3f nb, maths::vec3f nc){
 
 void Triangle::setTexCoords(maths::vec2f uv1,maths::vec2f uv2,maths::vec2f uv3){
     texCoords = {uv1,uv2,uv3};
+    populateVertices();
+}
+
+void Triangle::setColor(maths::vec3f col){
+    color = col;
     populateVertices();
 }
 
@@ -100,7 +105,7 @@ void Triangle::fillBottomFlatTriangle(Vertex& v1, Vertex& v2, Vertex& v3)
     
     auto e2 = v1;
 
-    drawFlatTriangle(v1,v2,v3,dt1,dt2,e2);
+    drawFlatTriangle(v1,v2,v3,dt1,dt2,e2); //common triangle draw
 }
 
 void Triangle::fillTopFlatTriangle(Vertex& v1, Vertex& v2, Vertex& v3)
@@ -119,27 +124,30 @@ void Triangle::fillTopFlatTriangle(Vertex& v1, Vertex& v2, Vertex& v3)
 void Triangle::drawFlatTriangle(Vertex& v1, Vertex& v2, Vertex&v3, Vertex& d1, Vertex& d2, Vertex e2){
     auto e1 = v1;
 
-    const int yStart = (int)ceil(v1.position[1] - 0.5f);
-    const int yEnd = (int)ceil(v3.position[1] -   0.5f);
-    e1 += d1 * (float(yStart) + 0.5f - v1.position[1]);
-    e2 += d2 * (float(yStart) + 0.5f - v1.position[1]);
+    const int start_y = (int)ceil(v1.position[1] - 0.5f);
+    const int end_y = (int)ceil(v3.position[1] -   0.5f);
+    e1 += d1 * (float(start_y) + 0.5f - v1.position[1]);
+    e2 += d2 * (float(start_y) + 0.5f - v1.position[1]);
 
-    for (int y = yStart; y < yEnd; y++, e1 += d1, e2 += d2)
+    for (int y = start_y; y < end_y; y++, e1 += d1, e2 += d2)
     {
-        const int xStart = (int)ceil(e1.position[0]-0.5f);
-        const int xEnd = (int)ceil(e2.position[0]-0.5f); // the pixel AFTER the last pixel drawn
+        const int start_x = (int)ceil(e1.position[0]-0.5f);
+        const int end_x = (int)ceil(e2.position[0]-0.5f);
         
         auto iLine = e1;
         const float dx = e2.position[0] - e1.position[0];
         const auto diLine = (e2 - iLine) / dx;
-        iLine += diLine * (float(xStart)+0.5f- e1.position[0]);
+        iLine += diLine * (float(start_x)+0.5f- e1.position[0]);
 
-        for (int x = xStart; x < xEnd; x++, iLine += diLine)
+        for (int x = start_x; x < end_x; x++, iLine += diLine)
         {
-            // recover z from interpolation of 1/z
+            // recover z
             const float z = 1.0f/iLine.position[2];
             maths::vec3f color = {iLine.color[0], iLine.color[1], iLine.color[2]};
-            m_canvas->putpixel(x, y,z, color);
+            // if (!isShadow)
+                m_canvas->putpixel(x, y,z, color);
+            // else
+                // m_canvas->shadowpixel(x,y,z,color);
         }
     }
 }
@@ -156,4 +164,9 @@ void Triangle::wireframe_draw(){
 	m_canvas->drawline(v2[0],v2[1],v3[0],v3[1],color);
 	m_canvas->drawline(v3[0],v3[1],v1[0],v1[1],color);
 }
+
+// void Triangle::shadowRasterize(){
+//     isShadow = true;
+//     rasterize();
+// }
 

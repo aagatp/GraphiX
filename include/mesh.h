@@ -26,7 +26,7 @@ public:
     void flatShading(Triangle& tri);
     void gouraudShading(Triangle& tri);
     void phongShading(Triangle& tri);
-    
+
     void setView(maths::mat4f);
     void setProjection(maths::mat4f);
 
@@ -40,11 +40,22 @@ public:
 private:
     std::vector<Triangle> triangles;
     std::vector<Triangle> finalTris;
+    std::vector<Triangle> shadowTris;
 
     bool isWireframe;
     bool isGouraudShade;
-    bool isTextured;
+    bool isFlatShade;
 
+    maths::vec3f colors[8] = {
+                {34,139,34}, // green
+                {220,20,60}, //red
+                {255,69,0}, // orange red
+                {0,128,0}, // green 
+                {240,240,250}, //whitish greyish 
+                {100,100,100}, // dark grey
+                {72,61,139}, //violet
+                {0,0,205} // blue medium
+        };
     maths::mat4f view;
     maths::mat4f projection;
 };

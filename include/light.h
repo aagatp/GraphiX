@@ -1,5 +1,6 @@
 #pragma once
 #include "maths.h"
+#include "camera.h"
 
 //Phong Lighting Model
 struct Light
@@ -21,6 +22,9 @@ struct Light
     float specularConstant = 1;
 
     float calculateIntensity(maths::vec3f,maths::vec3f, maths::vec3f);
+    bool applyShadows(maths::vec2i);
+    Camera* lightcam;
 
     void processKeyboard(int, float);
+    maths::mat4f getLightTransform();
 };

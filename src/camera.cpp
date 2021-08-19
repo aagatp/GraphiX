@@ -3,12 +3,13 @@
 
 Camera::Camera()
 {
-    m_pos         = {1.0f, 1.0f, 30.0f};
+    m_pos         = {1.0f, 1.6f, 10.0f};
     m_front       = {0.0f, 0.0f, -1.0f};
     m_up          = {0.0f, 1.0f, 0.0f};
     m_right       = maths::normalize(maths::cross(m_front,m_up));
-    zoom = 30.0f;
+    zoom = 45.0f;
     m_speed = 1.0f;
+
 }
 
 void Camera::processKeyboard(unsigned char key,float dt)
@@ -47,7 +48,7 @@ void Camera::processKeyboard(unsigned char key,float dt)
         case 'z':
             zoom = zoom < 0.05 ? 0.05 : zoom-5*dt;
             break;
-            
+
         case 'q':
             exit(0);
 

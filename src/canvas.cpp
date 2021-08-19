@@ -28,7 +28,8 @@ void Canvas::reshape(int w, int h) {
 
 void Canvas::update(int value) {
     glClear( GL_COLOR_BUFFER_BIT);
-
+    glClearColor(135.0f/255.0f,206.0f/255.0f,235.0f/255.0f,0.1f);
+    // glClearColor(176.0f/255.0f,169.0f/255.0f,159.0f/255.0f,1);
     float fps = 60;
     glutPostRedisplay();
     glutTimerFunc(1000 /fps, update, 0);
@@ -48,13 +49,14 @@ void Canvas::display() {
 
 void Canvas::putpixel(float x, float y,float zBuf, const maths::vec3f col) {
     
-    
     // Clipping
     if (x>0 && x<scrWidth && y>0 && y<scrWidth){
 
         //Depth Test
         auto tmp = buffermaps.find((int)x+(int)y*scrWidth);
         if (tmp!= buffermaps.end()){
+
+            // if current zbuffer is greater than already present
             if (zBuf > buffermaps.at((int)x+(int)y*scrWidth).zBuffer){
                 Buffer tmp;
                 tmp.cords = {(int)x,(int)y};
@@ -63,6 +65,7 @@ void Canvas::putpixel(float x, float y,float zBuf, const maths::vec3f col) {
                 buffermaps[(int)x+(int)y*scrWidth] = tmp;
             }
         }
+        //if not in the buffermaps create new buffer
         else{
             Buffer tmp;
             tmp.cords = {(int)x,(int)y};
@@ -72,6 +75,25 @@ void Canvas::putpixel(float x, float y,float zBuf, const maths::vec3f col) {
         }
     }
 }
+
+// void Canvas::shadowpixel(float x,float y, float shadowDepth, const maths::vec3f col){
+//     auto rmp = buffermaps.find((int)x+(int)y*scrWidth);
+//     if (rmp !=buffermaps.end()){
+//         auto tmp = shadowmaps.find((int)x+(int)y*scrWidth);
+//         if (tmp!=shadowmaps.end())
+//         {
+//             float oldDepth = shadowmaps.at((int)x+(int)y*scrWidth);
+//             if (oldDepth < shadowDepth){
+//                 buffermaps[(int)x+(int)y*scrWidth].color = {180,160,170};
+//                 shadowmaps[(int)x+(int)y*scrWidth] = shadowDepth;
+//             }
+//         }
+//         else{
+//             shadowmaps[(int)x+(int)y*scrWidth] = shadowDepth;
+//         }
+//     }
+// }
+
 
 void Canvas::drawline(float x1, float y1, float x2, float y2, const maths::vec3f color)
 {

@@ -18,6 +18,7 @@ void processArrowKeys(int key, int x, int y){
 void processKeys(unsigned char key, int x, int y){
     camera->processKeyboard(key,deltaTime);
     mesh->processKeyboard(key,deltaTime);
+    light->processKeyboard(key, deltaTime);
 }
 
 void renderer(){
@@ -55,7 +56,7 @@ int main(int argc, char** argv){
 
     //Creating mesh
     mesh=new Mesh(canvas,light);
-    mesh->parse("../res/dharaharascene.obj");
+    mesh->parse("../res/dharahara.obj");
     mesh->camera = camera;
 
     //Glut specific functions

@@ -26,10 +26,12 @@ public:
     maths::vec3f intensities;
     std::array<Vertex,3> vertex;
     Canvas* m_canvas;
+    void shadowRasterize();
 
 private:
     void populateVertices();
     void drawFlatTriangle(Vertex &,Vertex &,Vertex &,Vertex &,Vertex &,Vertex);
     void fillBottomFlatTriangle(Vertex& v1,Vertex& v2, Vertex& v3);
     void fillTopFlatTriangle(Vertex& v1,Vertex& v2, Vertex& v3);
+    bool isShadow=false;
 };

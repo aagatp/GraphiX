@@ -8,6 +8,7 @@ Mesh::Mesh(Canvas* mcanvas, Light* mlight){
     view = maths::matidentity();
     isWireframe = true;
     isGouraudShade = false;
+    isFlatShade = true;
 }
 
 void Mesh::load(std::string filename){
@@ -61,7 +62,7 @@ void Mesh::parse(std::string filename){
     std::vector<maths::vec3f> normals;
     std::vector<maths::vec2f> textures;
     
-    int count =1;
+    int count =0;
     while (!in.eof())
     {
         //get one line at a time
@@ -78,7 +79,6 @@ void Mesh::parse(std::string filename){
             iss >> v[1];
             iss >> v[2];
             verts.push_back(v);
-            count++;
         }
         else if (!line.compare(0, 3, "vt "))    //starts with vt<space>
         {
@@ -97,6 +97,9 @@ void Mesh::parse(std::string filename){
             iss >> n[1];
             iss >> n[2];
             normals.push_back(n);
+        }
+        else if (!line.compare(0,2,"o ")){
+            count++;
         }
         else if (!line.compare(0, 2, "f ")) //starts with f<space>
         {
@@ -117,7 +120,24 @@ void Mesh::parse(std::string filename){
             tri.setVertex(verts[f[0][0]],verts[f[1][0]],verts[f[2][0]]);
             tri.setTexCoords(textures[f[0][1]],textures[f[1][1]],textures[f[2][1]]);
             tri.setNormals(normals[f[0][2]],normals[f[1][2]],normals[f[2][2]]);
+
+            if (count >14 && count < 27)
+                tri.setColor(colors[0]);
+            if (count==14)
+                tri.setColor(colors[3]);
+            if (count > 27 && count <38)
+                tri.setColor(colors[1]);
+            if (count <= 13)
+                tri.setColor(colors[2]);
+            if (count==39)
+                tri.setColor(colors[7]);
+            if (count >39 && count<45)
+                tri.setColor(colors[5]);
+            if (count>=45)
+                tri.setColor(colors[4]);
+            
             triangles.push_back(tri);
+            
         }
     }   
     finalTris = triangles;
@@ -176,10 +196,12 @@ void Mesh::processKeyboard(char key, float dt){
             isWireframe = !isWireframe;
             break;
         case 'g':
-            isGouraudShade = !isGouraudShade;
+            isGouraudShade = true;
+            isFlatShade = false;
             break;
         case 't':
-            isTextured = !isTextured;
+            isFlatShade = true;
+            isGouraudShade = false;
             break;
         case 'j':
             xrotate(0.05);
@@ -200,24 +222,23 @@ void Mesh::render(){
     
     finalTris.clear();
     int count = 0;
-    for (auto& tri:triangles){
+    for (auto tri:triangles){
         Triangle temptri = tri;
-
+        
         // Culling
         if (backFaceCulling(temptri)){
             continue;
         }
-        //Shading
-        if (isGouraudShade)
-            gouraudShading(temptri);
-        else
+        if (isFlatShade)
             flatShading(temptri);
-            
+        else if (isGouraudShade)
+            gouraudShading(temptri);
+        
+        // isGouraudShade = false;
         //View Transform
         temptri.vertices[0] = maths::mul(view, temptri.vertices[0]);
         temptri.vertices[1] = maths::mul(view, temptri.vertices[1]);
         temptri.vertices[2] = maths::mul(view, temptri.vertices[2]);
-
 
         // Projection Transformation and Normalization
         temptri.vertices[0] = maths::mul(projection, temptri.vertices[0]);
@@ -225,6 +246,9 @@ void Mesh::render(){
         temptri.vertices[2] = maths::mul(projection, temptri.vertices[2]);
         
         // Viewport Transformation
+
+        maths::mat4f viewport = maths::mul(maths::translate(1.0,1.0,0.0),maths::scale(0.5*canvas->scrWidth,0.5*canvas->scrHeight,1.0));
+        
         temptri.vertices[0] = maths::mul(maths::translate(1.0,1.0,0.0),temptri.vertices[0]);
         temptri.vertices[1] = maths::mul(maths::translate(1.0,1.0,0.0),temptri.vertices[1]);
         temptri.vertices[2] = maths::mul(maths::translate(1.0,1.0,0.0),temptri.vertices[2]);
@@ -232,16 +256,36 @@ void Mesh::render(){
         temptri.vertices[0] = maths::mul(maths::scale(0.5*canvas->scrWidth,0.5*canvas->scrHeight,1.0),temptri.vertices[0]);
         temptri.vertices[1] = maths::mul(maths::scale(0.5*canvas->scrWidth,0.5*canvas->scrHeight,1.0),temptri.vertices[1]);
         temptri.vertices[2] = maths::mul(maths::scale(0.5*canvas->scrWidth,0.5*canvas->scrHeight,1.0),temptri.vertices[2]);
-
+        
         finalTris.push_back(temptri);
-    }
 
-    for (auto& tri:finalTris){
+        // //Shadows
+        // shadowtri.vertices[0] = maths::mul(light->getLightTransform(), temptri.vertices[0]);
+        // shadowtri.vertices[1] = maths::mul(light->getLightTransform(), temptri.vertices[1]);
+        // shadowtri.vertices[2] = maths::mul(light->getLightTransform(), temptri.vertices[2]);
+
+        // shadowtri.vertices[0] = maths::mul(maths::translate(1.0,1.0,0.0),shadowtri.vertices[0]);
+        // shadowtri.vertices[1] = maths::mul(maths::translate(1.0,1.0,0.0),shadowtri.vertices[1]);
+        // shadowtri.vertices[2] = maths::mul(maths::translate(1.0,1.0,0.0),shadowtri.vertices[2]);
+        
+        // shadowtri.vertices[0] = maths::mul(maths::scale(0.5*canvas->scrWidth,0.5*canvas->scrHeight,1.0),shadowtri.vertices[0]);
+        // shadowtri.vertices[1] = maths::mul(maths::scale(0.5*canvas->scrWidth,0.5*canvas->scrHeight,1.0),shadowtri.vertices[1]);
+        // shadowtri.vertices[2] = maths::mul(maths::scale(0.5*canvas->scrWidth,0.5*canvas->scrHeight,1.0),shadowtri.vertices[2]);
+
+        // shadowTris.push_back(shadowtri);
+    }
+    for (auto tri:finalTris){
         if (isWireframe)
             tri.wireframe_draw();
-        else
+        else{
             tri.rasterize();
+        }
     }
+
+    // for (auto tri:shadowTris){
+    //     tri.shadowRasterize();
+    // }
+    
 }
 
 bool Mesh::backFaceCulling(Triangle& tri){

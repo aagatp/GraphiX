@@ -16,4 +16,5 @@ public:
     maths::vec3f m_up;
     maths::vec3f m_right;
     float m_speed;
+    float yaw,pitch;
 };

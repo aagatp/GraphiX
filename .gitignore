@@ -4,6 +4,7 @@ build/*
 compile.sh
 
 .vscode
+.vs
 
 build.sh
 
