@@ -96,6 +96,34 @@ namespace maths{
         return product;
     }
 
+    vec2f mul(vec2f a, float num){
+        vec2f product;
+        for (int i=0;i<2;i++){
+            product[i] = a[i]*num;
+        }
+        return product;
+    }
+
+    vec2f div(vec2f a, float num){
+        return mul(a,1/num);
+    }
+
+    vec2f add(vec2f a, vec2f b){
+        vec2f product = {};
+        for (int i=0; i<2; i++){
+            product[i] = a[i] + b[i];
+        }
+        return product;
+    }
+
+    vec2f sub(vec2f a, vec2f b){
+        vec2f product = {};
+        for (int i=0; i<2; i++){
+            product[i] = a[i] - b[i];
+        }
+        return product;
+    }
+
     vec3f negate(vec3f a){
         vec3f b = {0,0,0};
         vec3f product = sub(b,a);

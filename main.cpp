@@ -8,6 +8,7 @@
 Canvas* canvas;
 Camera* camera;
 Mesh* mesh;
+Mesh* lightobject;
 Light* light;
 float deltaTime;
 
@@ -28,6 +29,7 @@ void renderer(){
     float currentFrame = glutGet(GLUT_ELAPSED_TIME);
     deltaTime = (currentFrame - lastFrame)/1000;
     lastFrame = currentFrame;
+    std::cout << 1/deltaTime <<"\n";
 
     maths::mat4f view = camera->getViewMatrix();
     maths::mat4f projection = maths::perspective(maths::radians(camera->zoom), (float)canvas->scrWidth/canvas->scrHeight);
@@ -35,7 +37,6 @@ void renderer(){
     mesh->setView(view);
     mesh->setProjection(projection);
 
-    
     mesh->render(); // engine pipeline lies here
 
     canvas->update();
@@ -55,9 +56,10 @@ int main(int argc, char** argv){
     light = new Light();
 
     //Creating mesh
-    mesh=new Mesh(canvas,light);
-    mesh->parse("../res/dharahara.obj");
+    mesh=new Mesh(canvas);
+    mesh->light = light;
     mesh->camera = camera;
+    mesh->parse("../res/lowpoly.obj");
 
     //Glut specific functions
     glutKeyboardFunc(processKeys);

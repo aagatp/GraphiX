@@ -3,6 +3,7 @@
 #include "canvas.h"
 #include <vector>
 #include "vertex.h"
+#include "utils.h"
 
 class Triangle{
 public:
@@ -15,6 +16,9 @@ public:
     void setNormals(maths::vec3f na, maths::vec3f nb, maths::vec3f nc);
     void setTexCoords(maths::vec2f, maths::vec2f, maths::vec2f);
     void setIntensity(maths::vec3f);
+
+    void setMaterial(Material*);
+    void setImageTex(Image*);
 
     void wireframe_draw();
     void rasterize();
@@ -30,8 +34,10 @@ public:
 
 private:
     void populateVertices();
-    void drawFlatTriangle(Vertex &,Vertex &,Vertex &,Vertex &,Vertex &,Vertex);
-    void fillBottomFlatTriangle(Vertex& v1,Vertex& v2, Vertex& v3);
-    void fillTopFlatTriangle(Vertex& v1,Vertex& v2, Vertex& v3);
-    bool isShadow=false;
+    void fillFlatTriangle(Vertex& v1, Vertex& v2, Vertex&v3, Vertex& d1, Vertex& d2, Vertex e1, Vertex e2);
+    Image* image;
+    Material* material;
+    bool isTex=false;
+    void fillBottomFlat(Vertex& v1,Vertex& v2, Vertex& v3);
+    void fillTopFlat(Vertex& v1,Vertex& v2, Vertex& v3);
 };

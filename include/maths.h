@@ -36,12 +36,16 @@ namespace maths{
     vec3f mul(mat4f a, vec3f b);
 
     vec3f mul(vec3f a, float num);
+    vec2f mul(vec2f a, float num);
 
     vec3f div(vec3f a, float num);
+    vec2f div(vec2f a, float num);
 
     vec3f add(vec3f a, vec3f b);
+    vec2f add(vec2f a, vec2f b);
 
     vec3f sub(vec3f a, vec3f b);
+    vec2f sub(vec2f a, vec2f b);
 
     vec3f negate(vec3f a);
 

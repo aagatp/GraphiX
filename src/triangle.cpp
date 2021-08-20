@@ -47,6 +47,15 @@ void Triangle::setIntensity(maths::vec3f intense){
     intensities = intense;
     populateVertices();
 }
+void Triangle::setImageTex(Image* img){
+    image = img;
+}
+void Triangle::setMaterial(Material* mattmp){
+    material = mattmp;
+    // material->getImgName();
+    if (material->isTex)
+        isTex = true;
+}
 
 void Triangle::populateVertices(){
     for (int i=0; i<3; i++){
@@ -72,12 +81,12 @@ void Triangle::rasterize(){
     if(v2.position[1] == v3.position[1]){
         if (v2.position[0]>v3.position[0])
             std::swap(v2,v3);
-        fillBottomFlatTriangle(v1, v2, v3);
+        fillBottomFlat(v1, v2, v3);
     }
     else if(v1.position[1] == v2.position[1]){
         if (v2.position[0]<v1.position[0])
             std::swap(v1,v2);
-        fillTopFlatTriangle(v1, v2, v3);
+        fillTopFlat(v1, v2, v3);
     }
     else
     {   
@@ -85,44 +94,45 @@ void Triangle::rasterize(){
         Vertex v4 = v1 + (v3-v1)*split;
 
         if (v2.position[0]<v4.position[0]){
-            fillBottomFlatTriangle(v1, v2, v4);
-            fillTopFlatTriangle(v2, v4, v3);
+            fillBottomFlat(v1, v2, v4);
+            fillTopFlat(v2, v4, v3);
         }
         else{
-            fillBottomFlatTriangle(v1, v4, v2);
-            fillTopFlatTriangle(v4, v2, v3);
+            fillBottomFlat(v1, v4, v2);
+            fillTopFlat(v4, v2, v3);
         }
     }
 }
 
 
-void Triangle::fillBottomFlatTriangle(Vertex& v1, Vertex& v2, Vertex& v3)
+void Triangle::fillBottomFlat(Vertex& v1, Vertex& v2, Vertex& v3)
 {   
     float delta = v3.position[1] - v1.position[1]; //v3.y = v2.y so anything can be used
     
     auto dt1 = (v2 - v1) / delta; 
     auto dt2 = (v3 - v1) / delta;
     
+    auto e1 = v1;
     auto e2 = v1;
 
-    drawFlatTriangle(v1,v2,v3,dt1,dt2,e2); //common triangle draw
+    fillFlatTriangle(v1,v2,v3,dt1,dt2,e1,e2); //common triangle draw
 }
 
-void Triangle::fillTopFlatTriangle(Vertex& v1, Vertex& v2, Vertex& v3)
+void Triangle::fillTopFlat(Vertex& v1, Vertex& v2, Vertex& v3)
 {
     float delta = v3.position[1] - v1.position[1]; //v1.y = v2.y so anything can be used
     
     auto dt1 = (v3 - v1) / delta; 
     auto dt2 = (v3 - v2) / delta;
     
+    auto e1 = v1;
     auto e2 = v2;
 
-    drawFlatTriangle(v1,v2,v3,dt1,dt2,e2);
+    fillFlatTriangle(v1,v2,v3,dt1,dt2,e1, e2);
     
 }
 
-void Triangle::drawFlatTriangle(Vertex& v1, Vertex& v2, Vertex&v3, Vertex& d1, Vertex& d2, Vertex e2){
-    auto e1 = v1;
+void Triangle::fillFlatTriangle(Vertex& v1, Vertex& v2, Vertex&v3, Vertex& d1, Vertex& d2, Vertex e1, Vertex e2){
 
     const int start_y = (int)ceil(v1.position[1] - 0.5f);
     const int end_y = (int)ceil(v3.position[1] -   0.5f);
@@ -134,20 +144,21 @@ void Triangle::drawFlatTriangle(Vertex& v1, Vertex& v2, Vertex&v3, Vertex& d1, V
         const int start_x = (int)ceil(e1.position[0]-0.5f);
         const int end_x = (int)ceil(e2.position[0]-0.5f);
         
-        auto iLine = e1;
+        auto line = e1;
         const float dx = e2.position[0] - e1.position[0];
-        const auto diLine = (e2 - iLine) / dx;
-        iLine += diLine * (float(start_x)+0.5f- e1.position[0]);
+        const auto dline = (e2 - line) / dx;
+        line += dline * (float(start_x)+0.5f- e1.position[0]);
 
-        for (int x = start_x; x < end_x; x++, iLine += diLine)
+        for (int x = start_x; x < end_x; x++, line += dline)
         {
             // recover z
-            const float z = 1.0f/iLine.position[2];
-            maths::vec3f color = {iLine.color[0], iLine.color[1], iLine.color[2]};
-            // if (!isShadow)
-                m_canvas->putpixel(x, y,z, color);
-            // else
-                // m_canvas->shadowpixel(x,y,z,color);
+            const float z = 1.0f/line.position[2];
+            maths::vec3f color;
+            if (isTex)  
+                color = material->getpixel(line.texCoords[0],line.texCoords[1]);
+            else
+                color = {line.color[0], line.color[1], line.color[2]};
+            m_canvas->putpixel(x, y,z, color);
         }
     }
 }
@@ -164,9 +175,4 @@ void Triangle::wireframe_draw(){
 	m_canvas->drawline(v2[0],v2[1],v3[0],v3[1],color);
 	m_canvas->drawline(v3[0],v3[1],v1[0],v1[1],color);
 }
-
-// void Triangle::shadowRasterize(){
-//     isShadow = true;
-//     rasterize();
-// }
 

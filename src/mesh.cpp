@@ -1,9 +1,8 @@
 #include "mesh.h"
 #include <algorithm>
 
-Mesh::Mesh(Canvas* mcanvas, Light* mlight){
+Mesh::Mesh(Canvas* mcanvas){
     canvas = mcanvas;
-    light = mlight;
     projection = maths::matidentity();
     view = maths::matidentity();
     isWireframe = true;
@@ -30,7 +29,6 @@ void Mesh::load(std::string filename){
         s << line;
 
         char junk;
-
         if (line[0] == 'v')
         {
             maths::vec3f v;
@@ -61,7 +59,7 @@ void Mesh::parse(std::string filename){
     std::vector<maths::vec3f> verts;
     std::vector<maths::vec3f> normals;
     std::vector<maths::vec2f> textures;
-    
+    Material* mattmp;
     int count =0;
     while (!in.eof())
     {
@@ -71,6 +69,14 @@ void Mesh::parse(std::string filename){
         std::istringstream iss(line.c_str());
 
         char trash;
+        std::string str;
+
+        if (!line.compare(0,6,"mtllib")){
+            iss >> str >> str;
+            str = "../res/" + str;
+            parseMaterial(str);
+        }
+
         if (!line.compare(0, 2, "v "))  //starts with v<space>
         {   
             iss >> trash; // first character is v
@@ -101,6 +107,15 @@ void Mesh::parse(std::string filename){
         else if (!line.compare(0,2,"o ")){
             count++;
         }
+        else if (!line.compare(0,6,"usemtl")){
+            iss >> str >> str;
+            mattmp = &material_list[str];
+            std::cout << str << "\n";
+            // if (mattmp.isTex){
+            //     // image = new Image("../res/textures/"+mattmp.imgfile);
+            //     // image->load();
+            // }
+        }
         else if (!line.compare(0, 2, "f ")) //starts with f<space>
         {
             std::vector<maths::vec3i> f;
@@ -120,6 +135,8 @@ void Mesh::parse(std::string filename){
             tri.setVertex(verts[f[0][0]],verts[f[1][0]],verts[f[2][0]]);
             tri.setTexCoords(textures[f[0][1]],textures[f[1][1]],textures[f[2][1]]);
             tri.setNormals(normals[f[0][2]],normals[f[1][2]],normals[f[2][2]]);
+            // tri.setImageTex(image);
+            tri.setMaterial(mattmp);
 
             if (count >14 && count < 27)
                 tri.setColor(colors[0]);
@@ -143,6 +160,66 @@ void Mesh::parse(std::string filename){
     finalTris = triangles;
 }
 
+
+void Mesh::parseMaterial(std::string filename){
+    
+    std::ifstream in;
+    in.open(filename, std::ifstream::in);
+    //if file cannot be opened
+    if (in.fail())
+    {
+        std::cout << "Cannot Read Material" << std::endl;
+        return;
+    }
+    std::string line,strash;
+
+    Material temp;
+    
+    char trash;
+    while (!in.eof())
+    {
+        //get one line at a time
+        std::getline(in, line);
+        std::istringstream iss(line.c_str());
+
+       
+        if (!line.compare(0, 6, "newmtl"))  //New Material
+        {
+            iss >> strash >> strash;
+            material_list[strash] = temp;
+        }
+        if (!line.compare(0, 2, "Ns"))  //Shininess
+        {
+            iss >> trash>> trash >> material_list[strash].Ns;      // line is in the form ofNs 1.00000
+        }
+        if (!line.compare(0, 2, "Ka"))  //Ambient colour
+        {
+            iss >> trash >> trash >> material_list[strash].Ka[0]>>material_list[strash].Ka[1]>>material_list[strash].Ka[2];      // line is in the form of Ka 0.1 0.2 0.3
+        }
+        if (!line.compare(0, 2, "Kd"))  //Diffuse colour
+        {
+            iss >> trash >> trash >> material_list[strash].Kd[0] >> material_list[strash].Kd[1] >> material_list[strash].Kd[2];      // line is in the form of Kd 0.1 0.2 0.3
+        }
+        if (!line.compare(0, 2, "Ks"))  //Specular colour
+        {
+            iss >> trash >> trash >> material_list[strash].Ks[0] >> material_list[strash].Ks[1] >> material_list[strash].Ks[2];      // line is in the form of Kd 0.1 0.2 0.3
+        }
+        if (!line.compare(0, 6, "map_Kd"))
+        {
+            std::string src;
+            iss >> src >> src;
+            material_list[strash].isTex = true;
+            // Image* image = new Image();
+            // image->load("../res/textures/"+src);
+            // material_list[strash].img = new Image();
+            // material_list[strash].img->load("../res/textures/"+src);
+            Image image;
+            image.load("../res/textures/"+src);
+            material_list[strash].img = image;
+
+        }
+    }
+}
 
 void Mesh::translate(float tx, float ty, float tz){
     for (auto& tri: triangles){
@@ -196,13 +273,13 @@ void Mesh::processKeyboard(char key, float dt){
             isWireframe = !isWireframe;
             break;
         case 'g':
-            isGouraudShade = true;
-            isFlatShade = false;
+            isGouraudShade = !isGouraudShade;
+            // isFlatShade = false;
             break;
-        case 't':
-            isFlatShade = true;
-            isGouraudShade = false;
-            break;
+        // case 't':
+        //     isFlatShade = true;
+        //     isGouraudShade = false;
+        //     break;
         case 'j':
             xrotate(0.05);
             break;
@@ -229,10 +306,10 @@ void Mesh::render(){
         if (backFaceCulling(temptri)){
             continue;
         }
-        if (isFlatShade)
-            flatShading(temptri);
-        else if (isGouraudShade)
+        if (isGouraudShade)
             gouraudShading(temptri);
+        else
+            flatShading(temptri);
         
         // isGouraudShade = false;
         //View Transform
@@ -259,20 +336,6 @@ void Mesh::render(){
         
         finalTris.push_back(temptri);
 
-        // //Shadows
-        // shadowtri.vertices[0] = maths::mul(light->getLightTransform(), temptri.vertices[0]);
-        // shadowtri.vertices[1] = maths::mul(light->getLightTransform(), temptri.vertices[1]);
-        // shadowtri.vertices[2] = maths::mul(light->getLightTransform(), temptri.vertices[2]);
-
-        // shadowtri.vertices[0] = maths::mul(maths::translate(1.0,1.0,0.0),shadowtri.vertices[0]);
-        // shadowtri.vertices[1] = maths::mul(maths::translate(1.0,1.0,0.0),shadowtri.vertices[1]);
-        // shadowtri.vertices[2] = maths::mul(maths::translate(1.0,1.0,0.0),shadowtri.vertices[2]);
-        
-        // shadowtri.vertices[0] = maths::mul(maths::scale(0.5*canvas->scrWidth,0.5*canvas->scrHeight,1.0),shadowtri.vertices[0]);
-        // shadowtri.vertices[1] = maths::mul(maths::scale(0.5*canvas->scrWidth,0.5*canvas->scrHeight,1.0),shadowtri.vertices[1]);
-        // shadowtri.vertices[2] = maths::mul(maths::scale(0.5*canvas->scrWidth,0.5*canvas->scrHeight,1.0),shadowtri.vertices[2]);
-
-        // shadowTris.push_back(shadowtri);
     }
     for (auto tri:finalTris){
         if (isWireframe)
@@ -281,10 +344,6 @@ void Mesh::render(){
             tri.rasterize();
         }
     }
-
-    // for (auto tri:shadowTris){
-    //     tri.shadowRasterize();
-    // }
     
 }
 

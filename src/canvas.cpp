@@ -76,27 +76,9 @@ void Canvas::putpixel(float x, float y,float zBuf, const maths::vec3f col) {
     }
 }
 
-// void Canvas::shadowpixel(float x,float y, float shadowDepth, const maths::vec3f col){
-//     auto rmp = buffermaps.find((int)x+(int)y*scrWidth);
-//     if (rmp !=buffermaps.end()){
-//         auto tmp = shadowmaps.find((int)x+(int)y*scrWidth);
-//         if (tmp!=shadowmaps.end())
-//         {
-//             float oldDepth = shadowmaps.at((int)x+(int)y*scrWidth);
-//             if (oldDepth < shadowDepth){
-//                 buffermaps[(int)x+(int)y*scrWidth].color = {180,160,170};
-//                 shadowmaps[(int)x+(int)y*scrWidth] = shadowDepth;
-//             }
-//         }
-//         else{
-//             shadowmaps[(int)x+(int)y*scrWidth] = shadowDepth;
-//         }
-//     }
-// }
-
-
 void Canvas::drawline(float x1, float y1, float x2, float y2, const maths::vec3f color)
 {
+    
     float dx, dy;
     float steps, k;
     dx = abs(x2 - x1);
@@ -145,4 +127,5 @@ void Canvas::drawline(float x1, float y1, float x2, float y2, const maths::vec3f
     }
     putpixel(x, y,1, color);
 }
+
 

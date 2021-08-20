@@ -6,6 +6,7 @@
 #include <vector>
 #include <map>
 #include <limits>
+#include <vertex.h>
 
 struct Buffer{
     maths::vec2i cords;
@@ -26,12 +27,9 @@ public:
     static void update(int fps=30);
     void cleargrid();
     void putpixel(float x, float y,float zBuf, const maths::vec3f col);
-    // void putpixel(float x, float y,float zBuf, const maths::vec3f col);
     void drawline(float x1, float y1, float x2, float y2, const maths::vec3f color);
-    // void drawline(float x1, float y1, float x2, float y2, const maths::vec3f color);
     static int scrHeight, scrWidth;
     std::map<int,Buffer> buffermaps;
     std::map<int,float> shadowmaps;
 
-    void shadowpixel(float x,float y, float shadowBuffer, const maths::vec3f col);
 };

@@ -8,12 +8,14 @@
 #include "maths.h"
 #include "camera.h"
 #include "light.h"
+#include "utils.h"
 
 class Mesh{
 public:
-    Mesh(Canvas*,Light*);
+    Mesh(Canvas*);
     void load(std::string);
     void parse(std::string);
+    void parseMaterial(std::string);
 
     void xrotate(float);
     void yrotate(float);
@@ -45,6 +47,9 @@ private:
     bool isWireframe;
     bool isGouraudShade;
     bool isFlatShade;
+
+    std::map<std::string, Material> material_list;
+    std::map<std::string, Image> image_list;
 
     maths::vec3f colors[8] = {
                 {34,139,34}, // green

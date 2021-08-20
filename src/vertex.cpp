@@ -11,6 +11,7 @@ Vertex& Vertex::operator+=(const Vertex &rhs)
 {
     position = maths::add(position,rhs.position);
     color = maths::add(color,rhs.color);
+    texCoords = maths::add(texCoords,rhs.texCoords);
     return *this;
 }
 Vertex Vertex::operator+(const Vertex &rhs) const
@@ -21,6 +22,7 @@ Vertex & Vertex::operator-=(const Vertex &rhs)
 {
     position = maths::sub(position,rhs.position);
     color = maths::sub(color,rhs.color);
+    texCoords = maths::sub(texCoords,rhs.texCoords);
     return *this;
 }
 Vertex Vertex::operator-(const Vertex &rhs) const
@@ -31,6 +33,8 @@ Vertex & Vertex::operator*=(float rhs)
 {
     position = maths::mul(position,rhs);
     color = maths::mul(color,rhs);
+    texCoords = maths::mul(texCoords,rhs);
+
     return *this;
 }
 Vertex Vertex::operator*(float rhs) const
@@ -41,6 +45,7 @@ Vertex& Vertex::operator/=(float rhs)
 {
     position = maths::mul(position,1/rhs);
     color = maths::mul(color,1/rhs);
+    texCoords = maths::mul(texCoords,1/rhs);
     return *this;
 }
 Vertex Vertex::operator/(float rhs) const

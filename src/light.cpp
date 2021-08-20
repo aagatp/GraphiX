@@ -2,7 +2,7 @@
 #include <GL/glut.h>
 
 Light::Light(){
-    position = {30,100,100};
+    position = {10,10,30};
     float ambientInt = 0.2;
     float pointInt = 0.8;
     float specularCoefficient = 4;
@@ -10,8 +10,7 @@ Light::Light(){
     float ambientConstant = 1;
     float diffuseConstant = 1;
     float specularConstant = 1;
-    lightcam = new Camera();
-    lightcam->m_pos = position;
+
 }
 
 float Light::calculateIntensity(maths::vec3f point, maths::vec3f normal, maths::vec3f view){
@@ -31,16 +30,12 @@ float Light::calculateIntensity(maths::vec3f point, maths::vec3f normal, maths::
 
 }
 
-// bool Light::applyShadows(maths::vec2i point){
-
+// maths::mat4f Light::getLightTransform(){
+//     maths::mat4f proj = maths::perspective(lightcam->zoom, (float)1920/1080);
+//     maths::mat4f view = lightcam->getViewMatrix();
+//     maths::mat4f product = maths::mul(proj,view);
+//     return product;
 // }
-
-maths::mat4f Light::getLightTransform(){
-    maths::mat4f proj = maths::perspective(lightcam->zoom, (float)1920/1080);
-    maths::mat4f view = lightcam->getViewMatrix();
-    maths::mat4f product = maths::mul(proj,view);
-    return product;
-}
 
 void Light::processKeyboard(int key, float dt){
     float speed = 20;
@@ -75,7 +70,7 @@ void Light::processKeyboard(int key, float dt){
         
         case 'o':
             ambientInt = ambientInt < 0.01 ? 0.01 : ambientInt-dt/speed;
-            break;
-
+            break;  
     }
+    // lightobj->translate(position[0],position[1],position[2]);
 }
