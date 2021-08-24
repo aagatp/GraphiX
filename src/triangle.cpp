@@ -52,13 +52,13 @@ void Triangle::setImageTex(Image* img){
 }
 void Triangle::setMaterial(Material* mattmp){
     material = mattmp;
-    // material->getImgName();
     if (material->isTex)
         isTex = true;
 }
 
 void Triangle::populateVertices(){
     for (int i=0; i<3; i++){
+        vertex[i].intensity = intensities[i];
         vertex[i].color = maths::mul(color,intensities[i]);
         vertex[i].position = vertices[i];
         vertex[i].normal = normals[i];
@@ -153,9 +153,10 @@ void Triangle::fillFlatTriangle(Vertex& v1, Vertex& v2, Vertex&v3, Vertex& d1, V
         {
             // recover z
             const float z = 1.0f/line.position[2];
+            float intens = line.intensity;
             maths::vec3f color;
-            if (isTex)  
-                color = material->getpixel(line.texCoords[0],line.texCoords[1]);
+            if (isTex && isDrawTex)  
+                color = maths::mul(material->getpixel(line.texCoords[0],line.texCoords[1]),intens);
             else
                 color = {line.color[0], line.color[1], line.color[2]};
             m_canvas->putpixel(x, y,z, color);
@@ -175,4 +176,3 @@ void Triangle::wireframe_draw(){
 	m_canvas->drawline(v2[0],v2[1],v3[0],v3[1],color);
 	m_canvas->drawline(v3[0],v3[1],v1[0],v1[1],color);
 }
-

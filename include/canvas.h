@@ -7,6 +7,7 @@
 #include <map>
 #include <limits>
 #include <vertex.h>
+#include "utils.h"
 
 struct Buffer{
     maths::vec2i cords;
@@ -31,5 +32,5 @@ public:
     static int scrHeight, scrWidth;
     std::map<int,Buffer> buffermaps;
     std::map<int,float> shadowmaps;
-
+    static maths::vec3f bgcolor;
 };

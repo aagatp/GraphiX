@@ -5,9 +5,10 @@ Mesh::Mesh(Canvas* mcanvas){
     canvas = mcanvas;
     projection = maths::matidentity();
     view = maths::matidentity();
+    transform = maths::matidentity();
     isWireframe = true;
     isGouraudShade = false;
-    isFlatShade = true;
+    isTexture = false;
 }
 
 void Mesh::load(std::string filename){
@@ -110,11 +111,6 @@ void Mesh::parse(std::string filename){
         else if (!line.compare(0,6,"usemtl")){
             iss >> str >> str;
             mattmp = &material_list[str];
-            std::cout << str << "\n";
-            // if (mattmp.isTex){
-            //     // image = new Image("../res/textures/"+mattmp.imgfile);
-            //     // image->load();
-            // }
         }
         else if (!line.compare(0, 2, "f ")) //starts with f<space>
         {
@@ -209,10 +205,7 @@ void Mesh::parseMaterial(std::string filename){
             std::string src;
             iss >> src >> src;
             material_list[strash].isTex = true;
-            // Image* image = new Image();
-            // image->load("../res/textures/"+src);
-            // material_list[strash].img = new Image();
-            // material_list[strash].img->load("../res/textures/"+src);
+
             Image image;
             image.load("../res/textures/"+src);
             material_list[strash].img = image;
@@ -266,6 +259,9 @@ void Mesh::setProjection(maths::mat4f proj){
 void Mesh::setView(maths::mat4f vi){
     view= vi;
 }
+void Mesh::setTransform(maths::mat4f tr){
+    transform = tr;
+}
 
 void Mesh::processKeyboard(char key, float dt){
     switch (key){
@@ -274,12 +270,10 @@ void Mesh::processKeyboard(char key, float dt){
             break;
         case 'g':
             isGouraudShade = !isGouraudShade;
-            // isFlatShade = false;
             break;
-        // case 't':
-        //     isFlatShade = true;
-        //     isGouraudShade = false;
-        //     break;
+        case 't':
+            isTexture = !isTexture;
+            break;
         case 'j':
             xrotate(0.05);
             break;
@@ -302,6 +296,7 @@ void Mesh::render(){
     for (auto tri:triangles){
         Triangle temptri = tri;
         
+        temptri.isDrawTex = isTexture;
         // Culling
         if (backFaceCulling(temptri)){
             continue;
@@ -311,28 +306,10 @@ void Mesh::render(){
         else
             flatShading(temptri);
         
-        // isGouraudShade = false;
-        //View Transform
-        temptri.vertices[0] = maths::mul(view, temptri.vertices[0]);
-        temptri.vertices[1] = maths::mul(view, temptri.vertices[1]);
-        temptri.vertices[2] = maths::mul(view, temptri.vertices[2]);
 
-        // Projection Transformation and Normalization
-        temptri.vertices[0] = maths::mul(projection, temptri.vertices[0]);
-        temptri.vertices[1] = maths::mul(projection, temptri.vertices[1]);
-        temptri.vertices[2] = maths::mul(projection, temptri.vertices[2]);
-        
-        // Viewport Transformation
-
-        maths::mat4f viewport = maths::mul(maths::translate(1.0,1.0,0.0),maths::scale(0.5*canvas->scrWidth,0.5*canvas->scrHeight,1.0));
-        
-        temptri.vertices[0] = maths::mul(maths::translate(1.0,1.0,0.0),temptri.vertices[0]);
-        temptri.vertices[1] = maths::mul(maths::translate(1.0,1.0,0.0),temptri.vertices[1]);
-        temptri.vertices[2] = maths::mul(maths::translate(1.0,1.0,0.0),temptri.vertices[2]);
-        
-        temptri.vertices[0] = maths::mul(maths::scale(0.5*canvas->scrWidth,0.5*canvas->scrHeight,1.0),temptri.vertices[0]);
-        temptri.vertices[1] = maths::mul(maths::scale(0.5*canvas->scrWidth,0.5*canvas->scrHeight,1.0),temptri.vertices[1]);
-        temptri.vertices[2] = maths::mul(maths::scale(0.5*canvas->scrWidth,0.5*canvas->scrHeight,1.0),temptri.vertices[2]);
+        temptri.vertices[0] = maths::mul(transform, temptri.vertices[0]);
+        temptri.vertices[1] = maths::mul(transform, temptri.vertices[1]);
+        temptri.vertices[2] = maths::mul(transform, temptri.vertices[2]);
         
         finalTris.push_back(temptri);
 
@@ -344,7 +321,6 @@ void Mesh::render(){
             tri.rasterize();
         }
     }
-    
 }
 
 bool Mesh::backFaceCulling(Triangle& tri){
@@ -380,6 +356,14 @@ void Mesh::gouraudShading(Triangle& tri){
 
     maths::vec3f intensity;
     int count = 0;
+
+    float ka = maths::veclength(tri.material->Ka);
+    float kd = maths::veclength(tri.material->Kd);
+    float ks = maths::veclength(tri.material->Ks);
+    float ns = tri.material->Ns;
+
+    light->setParams(ka,kd,ks,ns);
+
     for (auto& vertex: tri.vertices){
         maths::vec3f view = maths::normalize(maths::sub(camera->m_pos,vertex));
         intensity[count] = light->calculateIntensity(vertex,tri.normals[count],view);

@@ -3,12 +3,12 @@
 #include "maths.h"
 #include "mesh.h"
 #include "light.h"
+#include "utils.h"
 
 //Global Setup
 Canvas* canvas;
 Camera* camera;
 Mesh* mesh;
-Mesh* lightobject;
 Light* light;
 float deltaTime;
 
@@ -33,9 +33,12 @@ void renderer(){
 
     maths::mat4f view = camera->getViewMatrix();
     maths::mat4f projection = maths::perspective(maths::radians(camera->zoom), (float)canvas->scrWidth/canvas->scrHeight);
-    
-    mesh->setView(view);
-    mesh->setProjection(projection);
+    maths::mat4f viewport = maths::mul(maths::scale(0.5*canvas->scrWidth,0.5*canvas->scrHeight,1.0),maths::translate(1.0,1.0,0.0));
+
+    maths::mat4f world_to_screennorm = maths::mul(projection,view);
+    maths::mat4f screennorm_to_device = maths::mul(viewport,world_to_screennorm);
+
+    mesh->setTransform(screennorm_to_device);
 
     mesh->render(); // engine pipeline lies here
 

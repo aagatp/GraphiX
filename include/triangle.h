@@ -31,12 +31,13 @@ public:
     std::array<Vertex,3> vertex;
     Canvas* m_canvas;
     void shadowRasterize();
+    bool isDrawTex=false;
+    Material* material;
+    Image* image;
 
 private:
     void populateVertices();
     void fillFlatTriangle(Vertex& v1, Vertex& v2, Vertex&v3, Vertex& d1, Vertex& d2, Vertex e1, Vertex e2);
-    Image* image;
-    Material* material;
     bool isTex=false;
     void fillBottomFlat(Vertex& v1,Vertex& v2, Vertex& v3);
     void fillTopFlat(Vertex& v1,Vertex& v2, Vertex& v3);

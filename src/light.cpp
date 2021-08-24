@@ -2,14 +2,15 @@
 #include <GL/glut.h>
 
 Light::Light(){
-    position = {10,10,30};
-    float ambientInt = 0.2;
-    float pointInt = 0.8;
-    float specularCoefficient = 4;
+    position = {10,10,20};
 
-    float ambientConstant = 1;
-    float diffuseConstant = 1;
-    float specularConstant = 1;
+    ambientInt = 0.4;
+    pointInt = 0.5;
+
+    specularCoefficient = 32;
+    ambientConstant = 1;
+    diffuseConstant = 1;
+    specularConstant = 1;
 
 }
 
@@ -19,12 +20,12 @@ float Light::calculateIntensity(maths::vec3f point, maths::vec3f normal, maths::
 
     float ambientLight = ambientConstant*ambientInt;
     
-    float diffuseLight = maths::max(diffuseConstant* 1 *maths::dot(normal,l_dir),0.0f);
+    float diffuseLight = maths::max(diffuseConstant* pointInt *maths::dot(normal,l_dir),0.0f);
 
     maths::vec3f reflection = maths::normalize(maths::sub(maths::mul(normal,(2* maths::dot(normal,l_dir))),l_dir));
     float specularLight = specularConstant * pointInt * pow(maths::dot(reflection,view),specularCoefficient);
     
-    float tmp = ambientLight+diffuseLight;
+    float tmp = ambientLight+diffuseLight+specularLight;
     tmp = (tmp > 1) ? 1: tmp;
     return tmp;
 
@@ -37,8 +38,16 @@ float Light::calculateIntensity(maths::vec3f point, maths::vec3f normal, maths::
 //     return product;
 // }
 
+void Light::setParams(float aconst, float dconst,float sconst, float spec){
+    ambientConstant = aconst;
+    diffuseConstant = dconst;
+    specularCoefficient = sconst;
+    specularCoefficient = spec;
+}
+
 void Light::processKeyboard(int key, float dt){
     float speed = 20;
+    float tmp = pointInt + ambientInt;
     switch (key){
         case GLUT_KEY_RIGHT:
             position[0] += speed*dt;
@@ -67,10 +76,19 @@ void Light::processKeyboard(int key, float dt){
         case 'p':
             ambientInt = ambientInt > 0.8 ? 0.8 : ambientInt+dt/speed;
             break;
-        
+
         case 'o':
             ambientInt = ambientInt < 0.01 ? 0.01 : ambientInt-dt/speed;
             break;  
+        
+        case 'm':
+            pointInt = pointInt > 0.8 ? 0.8 : pointInt+dt/speed;
+            break;
+        
+        case 'n':
+            pointInt = pointInt < 0.01 ? 0.01 : pointInt-dt/speed;
+            break;
     }
-    // lightobj->translate(position[0],position[1],position[2]);
+    float diff = tmp-(pointInt+ambientInt);
+    Canvas::bgcolor = maths::sub(Canvas::bgcolor, maths::mul({20,100,100},diff));
 }

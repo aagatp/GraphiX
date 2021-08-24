@@ -1,8 +1,8 @@
 #include "canvas.h"
 
-int Canvas::scrHeight = 1080;
-int Canvas::scrWidth = 1920;
-// float* Canvas::zbuffers= new float[scrHeight*scrWidth];
+int Canvas::scrHeight = 600;
+int Canvas::scrWidth = 800;
+maths::vec3f Canvas::bgcolor = {100, 190, 190};
 
 Canvas::Canvas(int argc,char **argv){
 
@@ -28,9 +28,11 @@ void Canvas::reshape(int w, int h) {
 
 void Canvas::update(int value) {
     glClear( GL_COLOR_BUFFER_BIT);
-    glClearColor(135.0f/255.0f,206.0f/255.0f,235.0f/255.0f,0.1f);
+    maths::vec3f col = maths::div(bgcolor,255);
+    glClearColor(col[0],col[1],col[2],0.9);
+    // glClearColor(135.0f/255.0f,206.0f/255.0f,235.0f/255.0f,0.1f);
     // glClearColor(176.0f/255.0f,169.0f/255.0f,159.0f/255.0f,1);
-    float fps = 60;
+    float fps = 120;
     glutPostRedisplay();
     glutTimerFunc(1000 /fps, update, 0);
 }

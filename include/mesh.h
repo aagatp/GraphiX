@@ -31,6 +31,7 @@ public:
 
     void setView(maths::mat4f);
     void setProjection(maths::mat4f);
+    void setTransform(maths::mat4f);
 
     void processKeyboard(char, float);
     void render();
@@ -46,7 +47,7 @@ private:
 
     bool isWireframe;
     bool isGouraudShade;
-    bool isFlatShade;
+    bool isTexture;
 
     std::map<std::string, Material> material_list;
     std::map<std::string, Image> image_list;
@@ -63,4 +64,5 @@ private:
         };
     maths::mat4f view;
     maths::mat4f projection;
+    maths::mat4f transform;
 };

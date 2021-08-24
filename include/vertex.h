@@ -6,6 +6,7 @@ struct Vertex{
     maths::vec2f texCoords;
     maths::vec3f position;
     maths::vec3f color;
+    float intensity;
 
     Vertex() = default;
     Vertex(const maths::vec3f &pos, const maths::vec3f &normal, const maths::vec3f &c);
