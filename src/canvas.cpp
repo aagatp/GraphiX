@@ -32,7 +32,7 @@ void Canvas::update(int value) {
     glClearColor(col[0],col[1],col[2],0.9);
     // glClearColor(135.0f/255.0f,206.0f/255.0f,235.0f/255.0f,0.1f);
     // glClearColor(176.0f/255.0f,169.0f/255.0f,159.0f/255.0f,1);
-    float fps = 120;
+    float fps = 60;
     glutPostRedisplay();
     glutTimerFunc(1000 /fps, update, 0);
 }
@@ -46,6 +46,9 @@ void Canvas::display() {
     }
     glEnd();
     glutSwapBuffers();
+}
+
+void Canvas::cleargrid(){
     buffermaps.clear();
 }
 

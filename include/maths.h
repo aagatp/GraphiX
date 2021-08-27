@@ -82,4 +82,6 @@ namespace maths{
     vec3f barycentric(vec3f,vec3f,vec3f,vec3f);
 
     vec3f centroid(vec3f,vec3f,vec3f);
+
+    float getfps();
 }

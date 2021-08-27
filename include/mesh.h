@@ -35,6 +35,7 @@ public:
 
     void processKeyboard(char, float);
     void render();
+    void draw_thread(int,int,bool);
 
     Camera* camera;
     Canvas* canvas;

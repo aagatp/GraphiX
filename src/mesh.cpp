@@ -1,5 +1,6 @@
 #include "mesh.h"
 #include <algorithm>
+#include <thread>
 
 Mesh::Mesh(Canvas* mcanvas){
     canvas = mcanvas;
@@ -291,8 +292,6 @@ void Mesh::processKeyboard(char key, float dt){
 
 void Mesh::render(){
     
-    finalTris.clear();
-    int count = 0;
     for (auto tri:triangles){
         Triangle temptri = tri;
         
@@ -306,20 +305,11 @@ void Mesh::render(){
         else
             flatShading(temptri);
         
-
         temptri.vertices[0] = maths::mul(transform, temptri.vertices[0]);
         temptri.vertices[1] = maths::mul(transform, temptri.vertices[1]);
         temptri.vertices[2] = maths::mul(transform, temptri.vertices[2]);
         
-        finalTris.push_back(temptri);
-
-    }
-    for (auto tri:finalTris){
-        if (isWireframe)
-            tri.wireframe_draw();
-        else{
-            tri.rasterize();
-        }
+        isWireframe ? temptri.wireframe_draw() : temptri.rasterize();
     }
 }
 

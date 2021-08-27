@@ -136,8 +136,8 @@ void Triangle::fillFlatTriangle(Vertex& v1, Vertex& v2, Vertex&v3, Vertex& d1, V
 
     const int start_y = (int)ceil(v1.position[1] - 0.5f);
     const int end_y = (int)ceil(v3.position[1] -   0.5f);
-    e1 += d1 * (float(start_y) + 0.5f - v1.position[1]);
-    e2 += d2 * (float(start_y) + 0.5f - v1.position[1]);
+    // e1 += d1 * (float(start_y) + 0.5f - v1.position[1]);
+    // e2 += d2 * (float(start_y) + 0.5f - v1.position[1]);
 
     for (int y = start_y; y < end_y; y++, e1 += d1, e2 += d2)
     {

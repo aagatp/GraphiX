@@ -1,5 +1,5 @@
 #include "maths.h"
-
+#include "GL/glut.h"
 
 namespace maths{
 
@@ -272,5 +272,14 @@ namespace maths{
         product[2] = (v1[2] + v2[2] + v3[2]) / 3;
 
         return product;
+    }
+
+    float getfps(){
+        static float lastFrame = 0;
+        float currentFrame = glutGet(GLUT_ELAPSED_TIME);
+        static float deltaTime = (currentFrame - lastFrame)/1000;
+        lastFrame = currentFrame;
+        float fps = 1/deltaTime;
+        return fps;
     }
 }
