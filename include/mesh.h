@@ -34,15 +34,15 @@ public:
     void setTransform(maths::mat4f);
 
     void processKeyboard(char, float);
-    void render();
-    void draw_thread(int,int,bool);
+    void render(int,int);
+    // void draw_thread(int,int);
 
     Camera* camera;
     Canvas* canvas;
     Light* light;
+    std::vector<Triangle> triangles;
 
 private:
-    std::vector<Triangle> triangles;
     std::vector<Triangle> finalTris;
     std::vector<Triangle> shadowTris;
 
@@ -53,7 +53,7 @@ private:
     std::map<std::string, Material> material_list;
     std::map<std::string, Image> image_list;
 
-    maths::vec3f colors[8] = {
+    maths::vec3f colors[9] = {
                 {34,139,34}, // green
                 {220,20,60}, //red
                 {255,69,0}, // orange red
@@ -61,7 +61,8 @@ private:
                 {240,240,250}, //whitish greyish 
                 {100,100,100}, // dark grey
                 {72,61,139}, //violet
-                {0,0,205} // blue medium
+                {0,0,205}, // blue medium
+                {0,0,10} // black
         };
     maths::mat4f view;
     maths::mat4f projection;

@@ -8,7 +8,7 @@ class Image{
     std::string filename;
     int width, height, channel;
     int desired_channel;
-    std::vector <std::vector<maths::vec3f>> imagedata;
+    std::vector <std::vector<maths::vec3f>> imagedata; //imagedata[0][1] = {1,2,3};
     Image(){
         width = height = channel = 0;
         desired_channel = 3;//doesnt reads alpha for now

@@ -46,8 +46,9 @@ void renderer(){
     float currentFrame = glutGet(GLUT_ELAPSED_TIME);
     deltaTime = (currentFrame - lastFrame)/1000;
     lastFrame = currentFrame;
-    
     std::cout << 1/deltaTime <<"\n";
+    
+    int size = mesh->triangles.size();
 
     if (isFirstRender){
 
@@ -59,7 +60,8 @@ void renderer(){
         screennorm_to_device = maths::mul(viewport,world_to_screennorm);
         mesh->setTransform(screennorm_to_device);
 
-        mesh->render();
+        mesh->render(0,size);
+
         canvas->update();
         canvas->display();
 
@@ -68,7 +70,7 @@ void renderer(){
     if (isTransform){
 
         canvas->cleargrid();
-        mesh->render(); // engine pipeline lies here
+        mesh->render(0,size);
         canvas->update();
         canvas->display();
     }
@@ -91,7 +93,7 @@ int main(int argc, char** argv){
     mesh->light = light;
     mesh->camera = camera;
     mesh->parse("../res/lowpoly.obj");
-
+    // mesh->parse("../res/sphere.obj");
     //Glut specific functions
     glutKeyboardFunc(processKeys);
     glutSpecialFunc(processArrowKeys);

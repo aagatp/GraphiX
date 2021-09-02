@@ -135,20 +135,28 @@ void Mesh::parse(std::string filename){
             // tri.setImageTex(image);
             tri.setMaterial(mattmp);
 
-            if (count >14 && count < 27)
-                tri.setColor(colors[0]);
-            if (count==14)
-                tri.setColor(colors[3]);
-            if (count > 27 && count <38)
-                tri.setColor(colors[1]);
-            if (count <= 13)
-                tri.setColor(colors[2]);
-            if (count==39)
+            if (count<6)
                 tri.setColor(colors[7]);
-            if (count >39 && count<45)
-                tri.setColor(colors[5]);
-            if (count>=45)
+            if (count==6)
+                tri.setColor(colors[3]);
+            if (count >6 && count <= 18) // trees
+                tri.setColor(colors[0]);
+            if (count>19 && count <25) // street lights and such
+                tri.setColor(colors[8]);
+            if (count==25 || count==26) //dharahara and base
                 tri.setColor(colors[4]);
+            if (count==27) // fountain
+                tri.setColor(colors[5]);
+            if (count > 27 && count <34) // some houses
+                tri.setColor(colors[1]);
+            if (count==34 || count==35 | count==36) // people
+                tri.setColor(colors[2]);
+            if (count==37) //plane
+                tri.setColor(colors[4]);
+            if (count==38 | count==39 || count==40) // roads
+                tri.setColor(colors[5]);
+            if (count > 40) // some house
+                tri.setColor(colors[1]);
             
             triangles.push_back(tri);
             
@@ -290,10 +298,11 @@ void Mesh::processKeyboard(char key, float dt){
     }
 }
 
-void Mesh::render(){
+void Mesh::render(int start, int end){
     
-    for (auto tri:triangles){
-        Triangle temptri = tri;
+    for (int i=start;i<end; i++){
+    // for (auto tri:triangles){
+        Triangle temptri = triangles[i];
         
         temptri.isDrawTex = isTexture;
         // Culling
@@ -333,6 +342,13 @@ void Mesh::flatShading(Triangle& tri){
     maths::vec3f v1 = tri.vertices[0];
     maths::vec3f v2 = tri.vertices[1];
     maths::vec3f v3 = tri.vertices[2];
+
+    float ka = maths::veclength(tri.material->Ka);
+    float kd = maths::veclength(tri.material->Kd);
+    float ks = maths::veclength(tri.material->Ks);
+    float ns = tri.material->Ns;
+
+    light->setParams(ka,kd,ks,ns);
 
     maths::vec3f centroid = maths::centroid(v1,v2,v3);
     maths::vec3f normal = maths::getnormal(centroid,v2,v3);
